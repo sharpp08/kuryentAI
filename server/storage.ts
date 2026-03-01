@@ -51,24 +51,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]> {
-    // Note: In a real app we'd aggregate this in SQL, but for MVP we mock the aggregation
     const today = new Date();
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - (6 - i));
       return {
         date: d.toISOString(),
-        energyKwh: 40 + Math.random() * 20,
+        // Reflected PH electricity rates/usage patterns - higher during day
+        energyKwh: 50 + Math.random() * 30, 
       };
     });
   }
 
   async getConsumptionByCategory(): Promise<{ category: string, percentage: number, totalKwh: number }[]> {
-    // Mocked for MVP
     return [
-      { category: "HVAC", percentage: 45, totalKwh: 162 },
-      { category: "Lighting", percentage: 20, totalKwh: 72 },
-      { category: "Appliances", percentage: 25, totalKwh: 90 },
+      { category: "Aircon (HVAC)", percentage: 55, totalKwh: 198 },
+      { category: "Lighting", percentage: 15, totalKwh: 54 },
+      { category: "Appliances", percentage: 20, totalKwh: 72 },
       { category: "Other", percentage: 10, totalKwh: 36 },
     ];
   }

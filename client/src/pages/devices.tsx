@@ -24,7 +24,7 @@ export default function Devices() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-display font-bold">Device Management</h1>
-          <p className="text-muted-foreground mt-1">Monitor and control your connected equipment.</p>
+          <p className="text-muted-foreground mt-1">Monitor and control your appliances across the Philippines.</p>
         </div>
         <div className="flex items-center gap-4 bg-card/50 p-2 rounded-xl border border-border/50">
           <div className="flex items-center gap-2 px-3 py-1">

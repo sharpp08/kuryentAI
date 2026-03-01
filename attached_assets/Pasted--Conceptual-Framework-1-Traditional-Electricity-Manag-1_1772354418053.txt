@@ -1,0 +1,181 @@
+
+Conceptual Framework: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. Traditional Electricity Management Issue
+•	Reactive rather than proactive.
+•	Historically, in terms of averages, not real-time dynamics.
+•	Fails during demand surges or unpredictable supply.
+
+2. Use of Artificial Intelligence
+•	AI facilitates intelligent, rapid decision-making through the help of real-time and predictive analytics.
+•	Predictive applications, deep learning (DL), machine learning (ML), and IoT are involved.
+
+3. Energy Conservation Measures Using AI
+•	Proper demand forecasting using models such as LSTM or Random Forest.
+•	Running power-intensive appliances (e.g., air conditioners) on the basis of usage and weather.
+•	Intelligent grid balancing, battery storage application, and intelligent scheduling.
+
+4. Consequences and Sustainability Benefits
+•	Energy savings (up to 40% in certain systems).
+•	Economic savings.
+•	Sustainability in the environment through reduced emissions and fossil fuel usage.
+
+
+
+
+
+
+Electricity Consumption and Management Methods
+         Traditional electricity management systems rely on fixed scheduling and past consumption patterns, which are insufficient to meet the dynamic requirements of today'senergysystems. These conventional methods are incapable of responding during unpredictable peaks of consumption or supply fluctuations and thus introduce inefficiency and wastage of resources.
+
+Role of Artificial Intelligence in Energy Efficiency
+        Artificial Intelligence for Energy EfficiencyArtificial Intelligence (AI), and more so machine learning (ML) and deep learning (DL), is among the major drivers to revolutionize electricity management. AI platforms can process huge real-time data from weather models, IoT sensors, and smart meters. It offers precise forecasting, anomaly detection, and automation, significantly enhancing energy efficiency and reducing wastage.
+
+
+Schematic Diagram 
+
+
+        From a clear understanding of the relationship beatween the different variables involved in this study, 
+the schematic diagram is presented below
+	
+
+
+	
+
+
+Significance of the Study
+
+         The importance of this research is to examine the efficiency of AI-enabled electricity management systems in maximizing energy consumption and minimizing waste. Carried out in the 2023–2024 academic year, this research will highlight how predictive, real-time AI systems enhance energy efficiency over conventional static approaches. The outcomes of this research will serve smart building designers, energy firms, researchers, and green policymakers.
+
+Electricity Management Method
+
+         Traditional approaches to electricity management are unable to keep pace with modern sustainability targets.
+They are reactive and unable to dynamically adapt to demand surges or climatic conditions, hence inferior to the energy situation in the contemporary world.
+
+
+AI Techniques Employed
+AI systems employ different advanced algorithms including LSTM networks and Random Forest models.
+These methods enable accurate forecasting, intelligent HVAC control, and optimized system operation.
+Energy consumption is therefore reduced considerably, and operating costs
+minimized, and environmental impact is lowered.
+
+
+Scope and Limitations of the Study
+
+        The study is directed towards the evolution and evaluation of AI-based electricity management systems in smart infrastructure settings like buildings, campuses, and industrial plants. The scope extends to the assessment of forecasting performance, energy optimization, and real-time adaptability of AI models like ML and DL algorithms. The study is limited by various factors: (1) it excludes the financial cost evaluation of adopting AI
+systems; (2) it is confined to simulated or semi-controlled environments and might not even
+account for all unpredictable real-world variables; (3) it excludes hardware-level energy management solutions. Subsequent research is invited to investigate cross-platform integration and real-time
+deployment in more extensive, diverse environments.
+
+CHAPTER 2
+Review of Related Literature
+
+Artificial Intelligence and Predictive Systems for Philippine Energy Management
+         Implementation of Artificial Intelligence (AI) in the operation of electricity has finally started to gain momentum in the Philippines, driven by calls to make the electric system more efficient and sustainable. Industry leaders are seeing AI as a way to make the operation more reliable and to make better use of resources. For example, AboitizPower has been implementing Project Arkanghel, a data- and AI-driven program to upgrade the efficiency, reliability, and intelligence of its plants that have a capacity to generate heat. Project Arkanghel employs machine learning to predict maintenance schedules, regulate energy loads, and avoid fuel wastage (AboitizPower, 2025). It is the first to apply AI on a mass scale and to address inefficiencies that cannot be managed by conventional reactive control systems.
+ 
+The biggest distributor in the Philippines, Manila Electric Company (Meralco), also began to adopt its "4-I" strategy—integration, innovation, intelligence, and interoperability—to transition to a data-driven, intelligent grid. Meralco performs real-time monitoring of a grid, predictive determination of faults, and distributed energy resource (DER) optimization, especially the use of solar and energy storage batteries (Meralco, 2025). This is a historical shift from static demand control to dynamic, predictive control of electricity—with directions similar to that taken internationally towards smart grid maturation.
+ 
+AI Application in Renewable Energy Mapping and Utilization
+The Institute for Climate and Sustainable Cities (ICSC) also demonstrated AI application for renewable energy planning in its SPECTRUM project, which used satellite imagery and machine learning to identify rooftop solar potential in each of the Philippines' 174 cities. Less than a percent of the nation's total rooftop solar potential gets realized, according to the study, leaving a vast amount of renewable capacity left untapped. According to analysis, rooftop capacity may as well be as high as 1,846 MW, and the AI detection rate in urban mapping as high as 98% (ICSC, 2025). This indicates how AI supports data-driven energy planning and local solar mismatches and informs both public and private sector projects to become less reliant on fossil fuel.
+
+
+HVAC Optimization and Energy Efficiency
+Building operation, particularly HVAC (heating, ventilation, and air conditioning) systems, in commercial buildings that consume a significant volume of electricity, can be enhanced by AI's energy efficiency input. CBRE Facilities Management partnered with local companies in the Philippines to install state-of-the-art HVAC optimization technologies that monitor performance in real time with the help of analytics. Automated control systems and predictive maintenance, in their 2023 project, resulted in a saving of more than 1.3 million units of energy every year across various sites (CBRE, 2023). Those conclusions validate international studies that suggest AI-optimized HVAC systems have the potential to reduce energy intake by a maximum of 40%, which suggests a high adaptability to tropical areas of high air conditioning usage.
+ 
+Government Intervention and Foundations of Policy
+The Energy Efficiency and Conservation (EE&C) Roadmap 2017–2040, as prepared by the Department of Energy (DOE), codifies long-term national objectives to cut wastage of electricity and enhance system efficiency at the policy level (Department of Energy, 2017). It emphasizes strongly technology-intensive measures, comprising automated control of energy, intelligent metering, and incorporation of AI-based monitoring and predictive technologies. It also advocates energy-efficient infrastructure and appliances and outlines a template for future developments of AI.
+ 
+Other than among the nation's small and medium power users, the UP Center for Integrative and Development Studies (CIDS) (2022) also cited relevance to the use of waste heat. On the basis of research, waste heat recovery plants can be optimized by emerging AI and IoT technologies that can predict energy flows and make real-time corrections, being more efficient and sustainable.
+ 
+Provincial-Level Issues in Implementation
+In spite of these advances, a number of challenges inhibit widescale AI deployment in Philippine energy administration. Real-time monitoring and high-definition data collection are further complicated by infrastructure challenges, including patchy rural coverage and scarce smart meter deployment. Moreover, smart grid deployments are being delayed due to complicated upgrade regulation procedures (Meralco, 2025). By SPECTRUM reports, fewer than 1% of the country's rooftop solar potential is being utilized, and renewable integration remains a nascent activity (ICSC, 2025). Another new challenge facing increasing data center and overall AI industry power consumption is the latter. Research estimates that AI infrastructure in the coming decades could increase the national demand for electricity as much as 45,000 MW (Lopez, 2025). AI being both a driver of energy demand and a solution spotlights the need for real-time, adaptive control systems that employ reinforcement learning.
+
+
+CHAPTER 3
+RESEARCH METHODOLOGY
+
+Research Design
+
+       A descriptive-developmental research design was adopted here. It was descriptive in the sense that it was adopted to analyze existing electricity administration systems, identify their pitfalls, and assess the potential benefits of introducing Artificial Intelligence (AI). It was developmental in that it aimed at conceptualizing and establishing an AI-powered electricity administration model that can predict, optimize, and automate electricity consumption.
+By doing this, the research paper aimed to provide not only the Philippines' existing energy management state-of-the-art, but also a conceptual framework that acknowledges the possibility of increased energy efficiency through the use of AI-based technology. 
+
+
+Respondents
+
+Respondents for this study were the following groups:
+•	Home consumers with standard electric meters,
+•	Small and medium enterprise business, and
+•	Licensed propane marketers or local utility company staff.
+Purposive sampling method was used in choosing the participants based on their ability to provide information that was relevant, for example, energy utilization information, information on problems of inefficiency, and suggestions on AI-based solutions.
+
+Questionnaire
+The survey adopted a mix of both quantitative and qualitative data collection instruments, i.e.:
+1. Questionnaire Survey – Developed with the aim to acquire information regarding consumption behaviors related to electricity, knowledge of energy-saving technologies, and willingness to adopt AI-based management systems.
+
+2. Interview Guide – Utilized to capture expert views amongst IT experts, electrical engineers, and energy government officials regarding the feasibility and prospect for applications of AI in electricity administration.
+
+3. System Prototype Simulation – A power management prototype with AI was applied by using programming applications (e.g., Python and machine learning packages) to simulate forecasting and optimization interventions.
+
+
+Instrument Validity
+
+While conducting Survey
+To cross-validate the validity of the data collection instrument, the survey questionnaire and the interview guide were subjected to scrutiny by information technology and energy systems experts as well as scholars. The survey and the guide were pilot-tested with a small group of respondents to make sure that the entire items were readable, relevant, and appropriate with the study focus.
+
+Data Collection Methodology
+
+The data collection process consisted of five key phases:
+
+1. Preparation Phase – Carried out a literature review and designed survey and interview tools.
+
+2. Data Collection Phase – Conducted surveys and personally interviewed respondents identified.
+
+3. System Development Phase – Simulated and developed an electricity management proof-of-concept using AI based on the information harvested as baseline input data.
+
+4. Validation Phase – Verified the predictive capability and energy-conservation effectiveness of the model with controlled simulations.
+
+5. Analysis Phase – Interpreted results and compared outcomes with prior studies and traditional energy management systems.
+
+
+Data Analysis Technique
+
+It used both qualitative and quantitative approaches to data analysis:
+
+• Quantitative data from surveys was also subjected to descriptive statistics to check for relationships and trends.
+
+• Interview data was put under thematic analysis to extract qualitative data, thereby allowing researchers to present common perspectives and attitudes among energy professionals.
+
+
+
+Statistical Methods Used
+During quantitative analysis, the following statistical techniques were applied:
+
+• Frequency – To identify the frequency of specific responses or behaviors.
+
+• Percentage – Used to represent the ratio of respondents that exhibited similar reactions. 
+
+•Mean – In order to show mean responses and perceptions. 
+
+• Correlation Analysis – In order to quantify the association between electricity management with AI and efficiency gains. 
+
+• Rank – In ranking the key reasons for AI adoption or resistance. Ethical Considerations It strictly followed the code of ethics. The respondents were fully briefed on the aim and objectives of the study, their right to confidentiality, and that their participation was voluntary. Data was recorded only with prior permission and was meant for academic purposes alone. The participants were free to withdraw at any stage without any penalty.

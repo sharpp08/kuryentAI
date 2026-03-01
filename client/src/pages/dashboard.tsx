@@ -24,8 +24,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-10">
       <div>
-        <h1 className="text-3xl font-display font-bold">Dashboard Overview</h1>
-        <p className="text-muted-foreground mt-1">Real-time energy insights and analytics.</p>
+        <h1 className="text-3xl font-display font-bold">kuryentAI Dashboard</h1>
+        <p className="text-muted-foreground mt-1">AI-driven energy management for the Philippines.</p>
       </div>
 
       {/* KPI Cards */}
@@ -44,8 +44,8 @@ export default function Dashboard() {
                 <>
                   <div className="text-3xl font-bold font-display">{totalUsage.toFixed(1)} <span className="text-lg text-muted-foreground">kWh</span></div>
                   <p className="text-xs text-primary mt-1 flex items-center gap-1">
-                    <ArrowDownRight className="h-3 w-3" />
-                    12% less than last month
+                    <Activity className="h-3 w-3" />
+                    Optimal for PH Climate
                   </p>
                 </>
               )}
@@ -77,15 +77,15 @@ export default function Dashboard() {
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Savings</CardTitle>
-              <Activity className="h-4 w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Monthly Bill</CardTitle>
+              <span className="text-primary font-bold">₱</span>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold font-display text-green-400">
-                $45.20
+                ₱4,250.00
               </div>
               <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                Via AI optimization
+                Based on Meralco rates
               </p>
             </CardContent>
           </Card>

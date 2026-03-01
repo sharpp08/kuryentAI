@@ -92,38 +92,36 @@ export async function registerRoutes(
 
 // Seed the database
 export async function seedDatabase() {
-  const devices = await storage.getDevices();
-  if (devices.length === 0) {
-    await storage.createDevice({ name: "Central AC", category: "HVAC", status: true, currentPowerW: 3500 });
-    await storage.createDevice({ name: "Office Lights", category: "Lighting", status: true, currentPowerW: 400 });
-    await storage.createDevice({ name: "Breakroom Refrigerator", category: "Appliances", status: true, currentPowerW: 150 });
-    await storage.createDevice({ name: "Server Rack A", category: "IT", status: true, currentPowerW: 1200 });
-    await storage.createDevice({ name: "Conference Room Display", category: "AV", status: false, currentPowerW: 0 });
+  const devicesList = await storage.getDevices();
+  if (devicesList.length === 0) {
+    await storage.createDevice({ name: "Master Bedroom Aircon", category: "HVAC", status: true, currentPowerW: 1500 });
+    await storage.createDevice({ name: "Living Room Lights", category: "Lighting", status: true, currentPowerW: 200 });
+    await storage.createDevice({ name: "Sari-Sari Store Chiller", category: "Appliances", status: true, currentPowerW: 300 });
+    await storage.createDevice({ name: "Kitchen Refrigerator", category: "Appliances", status: true, currentPowerW: 150 });
+    await storage.createDevice({ name: "Office Desktop", category: "IT", status: false, currentPowerW: 0 });
   }
 
-  const insights = await storage.getInsights();
-  if (insights.length === 0) {
-    await storage.applyInsight(await storage.getInsights().then(res => res[0]?.id || 0)).catch(() => {}); // catch block just in case
-    // We can't directly create insights through the storage API right now, let's just use the DB directly for seeding
+  const insightsList = await storage.getInsights();
+  if (insightsList.length === 0) {
     const { db } = await import("./db");
     const { aiInsights } = await import("@shared/schema");
     await db.insert(aiInsights).values([
       {
-        title: "Optimize HVAC Schedule",
-        description: "The Central AC is running during non-business hours (11 PM - 5 AM). Adjusting the schedule can save significant energy.",
-        estimatedSavingsKwh: 120.5,
+        title: "Optimize Aircon Usage",
+        description: "Your Master Bedroom Aircon is running at 18°C. Increasing it to 24°C with a fan can save up to 25% on your Meralco bill.",
+        estimatedSavingsKwh: 85.5,
         applied: false,
       },
       {
-        title: "Dim Office Lights",
-        description: "Natural light is sufficient in the main office area between 10 AM and 3 PM. Recommend dimming lights by 40%.",
-        estimatedSavingsKwh: 45.2,
+        title: "Chiller Maintenance Alert",
+        description: "The Sari-Sari Store Chiller is consuming 20% more power than usual. Recommend cleaning the condenser coils to improve efficiency.",
+        estimatedSavingsKwh: 30.2,
         applied: false,
       },
       {
-        title: "Idle Equipment Detected",
-        description: "Conference Room Display has been idle but powered on for 48 hours. Enable auto-standby.",
-        estimatedSavingsKwh: 12.8,
+        title: "Peak Hour Load Shifting",
+        description: "Meralco peak hours are typically 10AM-4PM. Shift heavy appliance use (laundry/pumps) to early morning or late night to save on generation charges.",
+        estimatedSavingsKwh: 15.8,
         applied: true,
       }
     ]);

@@ -7,7 +7,13 @@ export interface Message {
 }
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "initial",
+      role: "assistant",
+      content: "Kumusta! I am your kuryentAI assistant. I can help you optimize your electricity usage and save on your Meralco bills. How can I help you today?",
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);

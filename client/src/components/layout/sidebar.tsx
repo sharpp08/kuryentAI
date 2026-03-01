@@ -15,12 +15,15 @@ export function Sidebar() {
 
   return (
     <div className="flex h-screen w-64 flex-col border-r border-border bg-card/50 backdrop-blur-md">
-      <div className="flex h-16 shrink-0 items-center px-6 border-b border-border/50">
+          <div className="flex h-16 shrink-0 items-center px-6 border-b border-border/50">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary neon-glow">
             <Zap className="h-5 w-5 fill-primary text-primary" />
           </div>
-          <span className="font-display text-xl font-bold tracking-tight">kuryentAI</span>
+          <div className="flex flex-col">
+            <span className="font-display text-xl font-bold tracking-tight leading-none">kuryentAI</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mt-0.5">Philippines</span>
+          </div>
         </div>
       </div>
       <nav className="flex flex-1 flex-col gap-2 p-4 overflow-y-auto">

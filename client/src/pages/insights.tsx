@@ -17,8 +17,13 @@ export default function Insights() {
         </div>
         <div>
           <h1 className="text-3xl font-display font-bold">AI Insights</h1>
-          <p className="text-muted-foreground mt-1">Smart recommendations to optimize your energy consumption.</p>
+          <p className="text-muted-foreground mt-1">Smart recommendations based on Philippine energy patterns.</p>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/20 w-fit">
+        <Zap className="h-4 w-4" />
+        <span className="text-sm font-semibold">₱4,250 Potential Savings</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

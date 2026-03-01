@@ -1,0 +1,174 @@
+CHAPTER 4
+PRESENTATION, ANALYSIS, AND INTERPRETATION OF DATA
+
+
+Presentation of Data
+
+The methods of collecting data have been survey questionnaires, interviews and system prototype simulation. Residential electricity consumers, small and medium enterprise (SME) owners and selected energy professionals or utility personnel were the respondents.
+
+
+A. Profile of Respondents
+
+Most of the respondents were residential consumers with SME owners and smaller percentage being the energy professionals. This allocation made sure that the information was included on user experience and technical view on electricity management.
+
+
+B. Current Electricity Management Practice.
+
+The results of the surveys have shown that majority of the respondents use traditional means of electricity management like:
+
+•	Checking of monthly electricity bills.
+
+•	Switching of appliances manually.
+
+•	Predetermined power-consuming devices schedules.
+
+•	Simple energy-saving (e.g., turn-off the unused devices).
+
+Nevertheless, other respondents noted the following problems:
+
+
+•	Unexpected rise in electricity costs.
+
+•	Lack of real-time monitoring
+
+•	Inability to determine the most energy consuming appliances.
+
+•	Lack of forecasting peak consumption periods.
+
+
+
+These results show that the conventional systems are largely reactive and do not have predictive features.
+
+C. Artificial Intelligence in Energy Management Awareness.
+
+The perception of electricity management awareness of Artificial Intelligence (AI) was also measured in the survey.
+
+
+Results showed that:
+
+
+•	Most of the respondents are conversant with AI as is widely used.
+
+
+•	Few people know about AI use in the management of electricity.
+
+
+•	Most of them stated that they would be ready to implement AI-based electricity systems at affordable and reliable rates.
+
+
+According to the interviews with specialists, AI can be very effective in enhancing:
+
+•	Demand forecasting of electricity.
+
+
+•	Automated load control
+
+
+•	Smart grid balancing
+
+
+•	Predictive maintenance
+
+Energy workers underlined that AI is a way of having systems react dynamically to the present conditions, as opposed to previous historical averages.
+
+
+
+Analysis of Data
+
+A. Quantitative Analysis
+Statistical tools that were utilized included the following:
+
+Frequency and Percentage
+
+The frequency and percentage were employed in order to define the frequency of certain responses. The results showed that:
+
+•	Most of the respondents have a fluctuating cost of electricity.
+
+•	Smarter and automated energy systems are of interest to most of the respondents.
+
+
+•	Most people are of the view that technology is able to enhance electricity management.
+
+
+Mean
+
+The calculated mean scores show that respondents, in general, agree with the following statements:
+
+•	The cost of electricity is rising.
+
+•	Conventional systems cannot be used to cope with consumption effectively.
+
+•	The AI-based systems can enhance the management of electricity.
+
+Correlation Analysis
+
+•	The analysis using correlation showed that there was a positive correlation between:
+
+•	Knowledge about AI and readiness to use AI-related systems.
+
+•	Live tracking and enhanced low carbon behavior.
+
+This indicates that the more people they can be educated about AI in the energy management, the more it can be adopted.
+
+
+B. Qualitative Analysis
+
+•	Interpretative analysis of interviews was done. The themes that came out are:
+
+•	Growth of Modernization - It has been highlighted that there is a need to modernize new electricity systems.
+
+•	Predictive Capability - AI allows one to correctly predict demand and peak hours.
+
+•	Automation and Efficiency - AI minimizes the number of human errors and increases system efficiency.
+
+•	Sustainability - AI has the effect of minimizing energy waste and environmental impact.
+
+These qualitative results are in support of the quantitative survey results.
+
+Findings of the AI-Based System Simulation.
+
+One prototype of AI-based electricity management system was created and modeled to compare the performance of forecasting and optimization.
+
+Forecasting Performance
+
+The AI model was also found to be better in predicting electricity consumption than conventional averaging techniques. It was able to determine peak working hours and schedule loads on that basis.
+
+•	Energy Optimization
+
+•	The simulation demonstrated that the AI-based system could:
+
+•	Cut back on electricity use during busy times.
+
+•	Optimize the scheduling of appliances.
+
+• Reduce unnecessary power use.
+In simulated situations, energy savings were also substantial particularly in the system of HVAC control and automated scheduling.
+
+
+
+
+
+
+
+
+
+
+
+
+
+The comparison clearly shows that AI-based electricity management systems provide better adaptability, forecasting accuracy, and efficiency than traditional methods.
+
+
+	Interpretation of Findings
+
+The findings indicate that:
+
+•	Electricity management systems of the past cannot handle the current energy requirements.
+
+•	The AI-based systems have superior forecasting and optimization.
+
+•	The respondents will consider using AI-powered electricity management solutions.
+
+•	The potential of AI in minimizing electricity usage and costs of operations is confirmed by simulation outcomes.
+
+The findings are consistent with the theoretical framework as discussed in previous chapters especially in adaptive control, machine learning, uncertainty-based optimization, and sustainability theory.
