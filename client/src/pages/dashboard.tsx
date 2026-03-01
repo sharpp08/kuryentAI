@@ -115,7 +115,14 @@ export default function Dashboard() {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis 
                         dataKey="date" 
-                        tickFormatter={(val) => format(new Date(val), 'MMM dd')}
+                        tickFormatter={(val) => {
+                          try {
+                            const d = new Date(val);
+                            return isNaN(d.getTime()) ? val : format(d, 'MMM dd');
+                          } catch (e) {
+                            return val;
+                          }
+                        }}
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
                         tickLine={false}
@@ -130,7 +137,14 @@ export default function Dashboard() {
                       />
                       <Tooltip 
                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                        labelFormatter={(val) => format(new Date(val), 'MMM dd, yyyy')}
+                        labelFormatter={(val) => {
+                          try {
+                            const d = new Date(val);
+                            return isNaN(d.getTime()) ? val : format(d, 'MMM dd, yyyy');
+                          } catch (e) {
+                            return val;
+                          }
+                        }}
                       />
                       <Area 
                         type="monotone" 
