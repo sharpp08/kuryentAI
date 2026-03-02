@@ -1,10 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useDevices, useToggleDevice } from "@/hooks/use-devices";
+import { useDevices, useToggleDevice, useCreateDevice } from "@/hooks/use-devices";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Power, Cpu, Monitor, Snowflake, Lightbulb } from "lucide-react";
+import { Power, Cpu, Monitor, Snowflake, Lightbulb, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertDeviceSchema } from "@shared/schema";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 function getDeviceIcon(category: string) {
   switch (category.toLowerCase()) {
@@ -18,6 +28,32 @@ function getDeviceIcon(category: string) {
 export default function Devices() {
   const { data: devices, isLoading } = useDevices();
   const toggleMutation = useToggleDevice();
+  const createMutation = useCreateDevice();
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(insertDeviceSchema),
+    defaultValues: {
+      name: "",
+      category: "Appliances",
+      currentPowerW: 0,
+      status: false,
+    },
+  });
+
+  const onSubmit = (data: any) => {
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        toast({ title: "Device added", description: `${data.name} has been added to your system.` });
+        setOpen(false);
+        form.reset();
+      },
+      onError: (error: any) => {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      },
+    });
+  };
 
   return (
     <div className="space-y-8 pb-10">
@@ -26,10 +62,87 @@ export default function Devices() {
           <h1 className="text-3xl font-display font-bold">Device Management</h1>
           <p className="text-muted-foreground mt-1">Monitor and control your appliances across the Philippines.</p>
         </div>
-        <div className="flex items-center gap-4 bg-card/50 p-2 rounded-xl border border-border/50">
-          <div className="flex items-center gap-2 px-3 py-1">
-            <div className="h-2 w-2 rounded-full bg-primary neon-glow" />
-            <span className="text-sm font-medium">System Online</span>
+        <div className="flex items-center gap-4">
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4" />
+                Add Device
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="glass-panel border-border/50">
+              <DialogHeader>
+                <DialogTitle>Add New Device</DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Device Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Living Room Aircon" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
+                            <SelectItem value="Lighting">Lighting</SelectItem>
+                            <SelectItem value="Appliances">Appliances</SelectItem>
+                            <SelectItem value="IT">IT / Electronics</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="currentPowerW"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Wattage (W)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="0" 
+                            {...field} 
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={createMutation.isPending}>
+                    {createMutation.isPending ? "Adding..." : "Add Device"}
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+
+          <div className="flex items-center gap-4 bg-card/50 p-2 rounded-xl border border-border/50">
+            <div className="flex items-center gap-2 px-3 py-1">
+              <div className="h-2 w-2 rounded-full bg-primary neon-glow" />
+              <span className="text-sm font-medium">System Online</span>
+            </div>
           </div>
         </div>
       </div>

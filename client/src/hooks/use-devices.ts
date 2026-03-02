@@ -23,6 +23,31 @@ export function useDevices() {
   });
 }
 
+export function useCreateDevice() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (device: z.infer<typeof api.devices.create.input>) => {
+      const res = await fetch(api.devices.create.path, {
+        method: api.devices.create.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(device),
+        credentials: "include",
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to create device");
+      }
+      const data = await res.json();
+      return parseWithLogging(api.devices.create.responses[201], data, "devices.create");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
+    },
+  });
+}
+
 export function useToggleDevice() {
   const queryClient = useQueryClient();
   
