@@ -20,6 +20,14 @@ export default function Dashboard() {
   const totalUsage = overview?.reduce((sum, item) => sum + item.energyKwh, 0) || 0;
   const activeDevices = devices?.filter(d => d.status).length || 0;
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
+  
+  // Calculate estimated monthly bill based on current 7-day average
+  // Meralco average rate is approx ₱12 per kWh
+  const avgDailyUsage = overview && overview.length > 0 
+    ? overview.reduce((sum, item) => sum + item.energyKwh, 0) / overview.length 
+    : 0;
+  const estMonthlyUsage = avgDailyUsage * 30;
+  const estMonthlyBill = estMonthlyUsage * 12;
 
   return (
     <div className="space-y-8 pb-10">
@@ -81,11 +89,15 @@ export default function Dashboard() {
               <span className="text-primary font-bold">₱</span>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-display text-green-400">
-                ₱4,250.00
-              </div>
+              {isLoadingOverview ? (
+                <Skeleton className="h-8 w-24" />
+              ) : (
+                <div className="text-3xl font-bold font-display text-green-400">
+                  ₱{estMonthlyBill.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              )}
               <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                Based on Meralco rates
+                Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo
               </p>
             </CardContent>
           </Card>
