@@ -85,7 +85,7 @@ export default function Dashboard() {
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Monthly Bill</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Monthly Bill (2026)</CardTitle>
               <span className="text-primary font-bold">₱</span>
             </CardHeader>
             <CardContent>
