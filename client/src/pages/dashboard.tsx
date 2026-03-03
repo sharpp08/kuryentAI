@@ -21,12 +21,21 @@ export default function Dashboard() {
   const activeDevices = devices?.filter(d => d.status).length || 0;
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
-  // Calculate estimated monthly usage and bill based on current 7-day average
+  // Calculate estimated monthly usage and bill
+  // We combine historical 7-day average with real-time current draw for a more "live" estimate
   // ANTECO residential rate as of Jan 2026 is ₱14.4881 per kWh
-  const avgDailyUsage = overview && overview.length > 0 
+  const avgHistoricalDailyUsage = overview && overview.length > 0 
     ? overview.reduce((sum, item) => sum + item.energyKwh, 0) / overview.length 
-    : 0;
-  const estMonthlyUsage = avgDailyUsage * 30;
+    : 15; // Fallback to 15kWh/day if no data
+  
+  // Current real-time load converted to daily kWh (W * 24h / 1000)
+  const currentDailyKwh = (currentDraw * 24) / 1000;
+  
+  // We weight the estimate: 70% historical trend, 30% current active load projection
+  // This ensures the bill "reacts" when you toggle devices
+  const projectedDailyUsage = (avgHistoricalDailyUsage * 0.7) + (currentDailyKwh * 0.3);
+  
+  const estMonthlyUsage = projectedDailyUsage * 30;
   const estMonthlyBill = estMonthlyUsage * 14.4881;
 
   return (
