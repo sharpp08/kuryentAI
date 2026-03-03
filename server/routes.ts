@@ -108,19 +108,19 @@ export async function seedDatabase() {
     await db.insert(aiInsights).values([
       {
         title: "Optimize Aircon Usage",
-        description: "Your Master Bedroom Aircon is running at 18°C. Increasing it to 24°C with a fan can save up to 25% on your Meralco bill.",
+        description: "Your Master Bedroom Aircon is running at 18°C. Increasing it to 24°C with a fan can save up to 25% on your ANTECO bill.",
         estimatedSavingsKwh: 85.5,
         applied: false,
       },
       {
         title: "Chiller Maintenance Alert",
-        description: "The Sari-Sari Store Chiller is consuming 20% more power than usual. Recommend cleaning the condenser coils to improve efficiency.",
+        description: "The Sari-Sari Store Chiller is consuming 20% more power than usual. Recommend cleaning the condenser coils to improve efficiency and lower generation charges.",
         estimatedSavingsKwh: 30.2,
         applied: false,
       },
       {
         title: "Peak Hour Load Shifting",
-        description: "Meralco peak hours are typically 10AM-4PM. Shift heavy appliance use (laundry/pumps) to early morning or late night to save on generation charges.",
+        description: "ANTECO encourages minimizing high-power appliance use during peak hours. Shift heavy loads to late night to save on generation charges.",
         estimatedSavingsKwh: 15.8,
         applied: true,
       }

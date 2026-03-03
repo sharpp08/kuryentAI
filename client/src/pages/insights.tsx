@@ -13,7 +13,8 @@ export default function Insights() {
     ?.filter(i => !i.applied)
     .reduce((sum, i) => sum + i.estimatedSavingsKwh, 0) || 0;
   
-  const potentialSavingsPesos = potentialSavingsKwh * 12;
+  // ANTECO residential rate ₱14.4881/kWh
+  const potentialSavingsPesos = potentialSavingsKwh * 14.4881;
 
   return (
     <div className="space-y-8 pb-10">
@@ -23,7 +24,7 @@ export default function Insights() {
         </div>
         <div>
           <h1 className="text-3xl font-display font-bold">AI Insights</h1>
-          <p className="text-muted-foreground mt-1">Smart recommendations based on Philippine energy patterns.</p>
+          <p className="text-muted-foreground mt-1">Smart recommendations based on ANTECO energy patterns.</p>
         </div>
       </div>
 

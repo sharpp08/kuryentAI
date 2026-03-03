@@ -22,12 +22,12 @@ export default function Dashboard() {
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
   // Calculate estimated monthly usage and bill based on current 7-day average
-  // Meralco average rate is approx ₱12 per kWh
+  // ANTECO residential rate as of Jan 2026 is ₱14.4881 per kWh
   const avgDailyUsage = overview && overview.length > 0 
     ? overview.reduce((sum, item) => sum + item.energyKwh, 0) / overview.length 
     : 0;
   const estMonthlyUsage = avgDailyUsage * 30;
-  const estMonthlyBill = estMonthlyUsage * 12;
+  const estMonthlyBill = estMonthlyUsage * 14.4881;
 
   return (
     <div className="space-y-8 pb-10">
@@ -96,8 +96,9 @@ export default function Dashboard() {
                   ₱{estMonthlyBill.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo
+              <p className="text-xs text-muted-foreground mt-1 flex flex-col gap-1">
+                <span>Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo at ANTECO rates</span>
+                <span className="text-primary font-medium italic">* Includes ₱500 PEPS subsidy if qualified</span>
               </p>
             </CardContent>
           </Card>
