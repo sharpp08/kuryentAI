@@ -57,8 +57,8 @@ export class DatabaseStorage implements IStorage {
       d.setDate(d.getDate() - (6 - i));
       return {
         date: d.toISOString(),
-        // Reflected PH electricity rates/usage patterns - higher during day
-        energyKwh: 50 + Math.random() * 30, 
+        // More realistic PH household daily usage (avg 10-20 kWh per day)
+        energyKwh: 12 + Math.random() * 8, 
       };
     });
   }

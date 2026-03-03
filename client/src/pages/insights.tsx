@@ -9,6 +9,12 @@ export default function Insights() {
   const { data: insights, isLoading } = useInsights();
   const applyMutation = useApplyInsight();
 
+  const potentialSavingsKwh = insights
+    ?.filter(i => !i.applied)
+    .reduce((sum, i) => sum + i.estimatedSavingsKwh, 0) || 0;
+  
+  const potentialSavingsPesos = potentialSavingsKwh * 12;
+
   return (
     <div className="space-y-8 pb-10">
       <div className="flex items-center gap-3">
@@ -23,7 +29,7 @@ export default function Insights() {
 
       <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/20 w-fit">
         <Zap className="h-4 w-4" />
-        <span className="text-sm font-semibold">₱4,250 Potential Savings</span>
+        <span className="text-sm font-semibold">₱{potentialSavingsPesos.toLocaleString(undefined, { maximumFractionDigits: 0 })} Potential Savings</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

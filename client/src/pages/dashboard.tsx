@@ -21,7 +21,7 @@ export default function Dashboard() {
   const activeDevices = devices?.filter(d => d.status).length || 0;
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
-  // Calculate estimated monthly bill based on current 7-day average
+  // Calculate estimated monthly usage and bill based on current 7-day average
   // Meralco average rate is approx ₱12 per kWh
   const avgDailyUsage = overview && overview.length > 0 
     ? overview.reduce((sum, item) => sum + item.energyKwh, 0) / overview.length 
@@ -42,7 +42,7 @@ export default function Dashboard() {
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Usage (30d)</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Total Usage (30d)</CardTitle>
               <Zap className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
@@ -50,10 +50,10 @@ export default function Dashboard() {
                 <Skeleton className="h-8 w-24" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold font-display">{totalUsage.toFixed(1)} <span className="text-lg text-muted-foreground">kWh</span></div>
+                  <div className="text-3xl font-bold font-display">{estMonthlyUsage.toFixed(1)} <span className="text-lg text-muted-foreground">kWh</span></div>
                   <p className="text-xs text-primary mt-1 flex items-center gap-1">
                     <Activity className="h-3 w-3" />
-                    Optimal for PH Climate
+                    Average for PH Climate
                   </p>
                 </>
               )}
