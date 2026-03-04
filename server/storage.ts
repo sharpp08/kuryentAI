@@ -51,14 +51,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]> {
+    // We'll return 0 usage by default to satisfy the "start from 0" requirement
+    // In a production environment, this would query the consumptionLogs table
     const today = new Date();
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - (6 - i));
       return {
         date: d.toISOString(),
-        // More realistic PH household daily usage (avg 10-20 kWh per day)
-        energyKwh: 12 + Math.random() * 8, 
+        energyKwh: 0, 
       };
     });
   }
