@@ -51,26 +51,54 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]> {
-    // We'll return 0 usage by default to satisfy the "start from 0" requirement
-    // In a production environment, this would query the consumptionLogs table
     const today = new Date();
+    const allDevices = await this.getDevices();
+    const currentActiveLoadKw = allDevices
+      .filter(d => d.status)
+      .reduce((sum, d) => sum + d.currentPowerW, 0) / 1000;
+
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - (6 - i));
+      
+      // Simulate historical data: baseline + random fluctuation
+      // But we'll make the "today" value (last index) reflect the actual current load
+      const baseline = 5 + Math.random() * 5;
+      const energyKwh = i === 6 ? (currentActiveLoadKw * 24) : baseline;
+
       return {
         date: d.toISOString(),
-        energyKwh: 0, 
+        energyKwh: Number(energyKwh.toFixed(2)), 
       };
     });
   }
 
   async getConsumptionByCategory(): Promise<{ category: string, percentage: number, totalKwh: number }[]> {
-    return [
-      { category: "Aircon (HVAC)", percentage: 55, totalKwh: 198 },
-      { category: "Lighting", percentage: 15, totalKwh: 54 },
-      { category: "Appliances", percentage: 20, totalKwh: 72 },
-      { category: "Other", percentage: 10, totalKwh: 36 },
-    ];
+    const allDevices = await this.getDevices();
+    const categories: Record<string, number> = {};
+    let totalPower = 0;
+
+    allDevices.forEach(d => {
+      const p = d.status ? d.currentPowerW : 0;
+      categories[d.category] = (categories[d.category] || 0) + p;
+      totalPower += p;
+    });
+
+    // If no devices are on, show 0 for all existing categories
+    if (totalPower === 0) {
+      const uniqueCats = [...new Set(allDevices.map(d => d.category))];
+      return uniqueCats.map(cat => ({
+        category: cat || "Uncategorized",
+        percentage: 0,
+        totalKwh: 0
+      }));
+    }
+
+    return Object.entries(categories).map(([category, power]) => ({
+      category: category || "Uncategorized",
+      percentage: Number(((power / totalPower) * 100).toFixed(1)),
+      totalKwh: Number(((power * 24) / 1000).toFixed(2)) // Projected daily kWh
+    }));
   }
 
   async getInsights(): Promise<AiInsight[]> {

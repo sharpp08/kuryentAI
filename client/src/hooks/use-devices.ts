@@ -44,6 +44,9 @@ export function useCreateDevice() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
+      // Invalidate consumption data so the dashboard updates
+      queryClient.invalidateQueries({ queryKey: [api.consumption.overview.path] });
+      queryClient.invalidateQueries({ queryKey: [api.consumption.byCategory.path] });
     },
   });
 }
@@ -67,6 +70,9 @@ export function useToggleDevice() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
+      // Invalidate consumption data so the dashboard updates
+      queryClient.invalidateQueries({ queryKey: [api.consumption.overview.path] });
+      queryClient.invalidateQueries({ queryKey: [api.consumption.byCategory.path] });
     },
   });
 }
