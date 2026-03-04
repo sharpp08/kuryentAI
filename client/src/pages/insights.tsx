@@ -13,8 +13,8 @@ export default function Insights() {
     ?.filter(i => !i.applied)
     .reduce((sum, i) => sum + i.estimatedSavingsKwh, 0) || 0;
   
-  // ANTECO residential rate ₱14.4881/kWh
-  const potentialSavingsPesos = potentialSavingsKwh * 14.4881;
+  // ANTECO residential rate ₱12.82/kWh
+  const potentialSavingsPesos = potentialSavingsKwh * 12.82;
 
   return (
     <div className="space-y-8 pb-10">
