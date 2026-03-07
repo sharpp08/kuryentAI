@@ -7,7 +7,10 @@ import {
   type InsertAiInsight,
   type Device,
   type ConsumptionLog,
-  type AiInsight
+  type AiInsight,
+  type AppSettings,
+  type InsertSettings,
+  appSettings
 } from "@shared/schema";
 import { eq, desc } from "drizzle-orm";
 
@@ -25,6 +28,10 @@ export interface IStorage {
   // Insights
   getInsights(): Promise<AiInsight[]>;
   applyInsight(id: number): Promise<AiInsight | undefined>;
+
+  // Settings
+  getSettings(): Promise<AppSettings>;
+  updateSettings(settings: InsertSettings): Promise<AppSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -109,6 +116,30 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db.update(aiInsights)
       .set({ applied: true })
       .where(eq(aiInsights.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getSettings(): Promise<AppSettings> {
+    const [settings] = await db.select().from(appSettings).limit(1);
+    if (!settings) {
+      // Seed default settings if not exists
+      const [newSettings] = await db.insert(appSettings).values({
+        householdName: "My Filipino Home",
+        electricityProvider: "ANTECO",
+        electricityRate: 12.82,
+        monthlyBudget: 5000,
+      }).returning();
+      return newSettings;
+    }
+    return settings;
+  }
+
+  async updateSettings(newSettings: InsertSettings): Promise<AppSettings> {
+    const existing = await this.getSettings();
+    const [updated] = await db.update(appSettings)
+      .set(newSettings)
+      .where(eq(appSettings.id, existing.id))
       .returning();
     return updated;
   }

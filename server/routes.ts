@@ -87,6 +87,21 @@ export async function registerRoutes(
     res.json(insight);
   });
 
+  // --- Settings ---
+  app.get(api.settings.get.path, async (req, res) => {
+    const settings = await storage.getSettings();
+    res.json(settings);
+  });
+
+  app.patch(api.settings.update.path, async (req, res) => {
+    try {
+      const settings = await storage.updateSettings(req.body);
+      res.json(settings);
+    } catch (err) {
+      res.status(400).json({ message: "Failed to update settings" });
+    }
+  });
+
   return httpServer;
 }
 

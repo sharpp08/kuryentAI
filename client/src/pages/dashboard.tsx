@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConsumptionOverview, useConsumptionByCategory } from "@/hooks/use-consumption";
 import { useDevices } from "@/hooks/use-devices";
+import { AppSettings } from "@shared/schema";
+import { api } from "@shared/routes";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -16,13 +19,16 @@ export default function Dashboard() {
   const { data: overview, isLoading: isLoadingOverview } = useConsumptionOverview();
   const { data: categoryData, isLoading: isLoadingCat } = useConsumptionByCategory();
   const { data: devices, isLoading: isLoadingDev } = useDevices();
+  const { data: settings } = useQuery<AppSettings>({
+    queryKey: [api.settings.get.path],
+  });
 
   const totalUsage = overview?.reduce((sum, item) => sum + item.energyKwh, 0) || 0;
   const activeDevices = devices?.filter(d => d.status).length || 0;
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
   // Calculate estimated monthly usage and bill
-  // ANTECO residential rate is approx ₱12.82 per kWh
+  const rate = settings?.electricityRate || 12.82;
   const hasData = overview && overview.length > 0 && overview.some(item => item.energyKwh > 0);
   
   const avgHistoricalDailyUsage = hasData 
@@ -38,7 +44,7 @@ export default function Dashboard() {
     : currentDailyKwh;
   
   const estMonthlyUsage = projectedDailyUsage * 30;
-  const estMonthlyBill = estMonthlyUsage * 12.82;
+  const estMonthlyBill = estMonthlyUsage * rate;
 
   return (
     <div className="space-y-8 pb-10">
@@ -108,7 +114,7 @@ export default function Dashboard() {
                 </div>
               )}
               <p className="text-xs text-muted-foreground mt-1 flex flex-col gap-1">
-                <span>Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo at ANTECO rates</span>
+                <span>Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo at {settings?.electricityProvider || 'ANTECO'} rates</span>
                 <span className="text-primary font-medium italic">* Includes ₱500 PEPS subsidy if qualified</span>
               </p>
             </CardContent>

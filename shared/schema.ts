@@ -30,11 +30,20 @@ export const aiInsights = pgTable("ai_insights", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const appSettings = pgTable("app_settings", {
+  id: serial("id").primaryKey(),
+  householdName: text("household_name").notNull().default("My Filipino Home"),
+  electricityProvider: text("electricity_provider").notNull().default("ANTECO"),
+  electricityRate: real("electricity_rate").notNull().default(12.82),
+  monthlyBudget: integer("monthly_budget").notNull().default(5000),
+});
+
 export * from "./models/chat";
 
 export const insertDeviceSchema = createInsertSchema(devices).omit({ id: true, createdAt: true });
 export const insertConsumptionLogSchema = createInsertSchema(consumptionLogs).omit({ id: true, timestamp: true });
 export const insertAiInsightSchema = createInsertSchema(aiInsights).omit({ id: true, createdAt: true, applied: true });
+export const insertSettingsSchema = createInsertSchema(appSettings).omit({ id: true });
 
 export type Device = typeof devices.$inferSelect;
 export type InsertDevice = z.infer<typeof insertDeviceSchema>;
@@ -42,3 +51,5 @@ export type ConsumptionLog = typeof consumptionLogs.$inferSelect;
 export type InsertConsumptionLog = z.infer<typeof insertConsumptionLogSchema>;
 export type AiInsight = typeof aiInsights.$inferSelect;
 export type InsertAiInsight = z.infer<typeof insertAiInsightSchema>;
+export type AppSettings = typeof appSettings.$inferSelect;
+export type InsertSettings = z.infer<typeof insertSettingsSchema>;

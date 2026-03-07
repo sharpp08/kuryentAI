@@ -89,6 +89,23 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
+  },
+  settings: {
+    get: {
+      method: 'GET' as const,
+      path: '/api/settings' as const,
+      responses: {
+        200: z.any(),
+      },
+    },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/settings' as const,
+      input: z.any(),
+      responses: {
+        200: z.any(),
+      },
+    },
   }
 };
 

@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useInsights, useApplyInsight } from "@/hooks/use-insights";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@shared/routes";
+import { AppSettings } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles, ArrowRight, CheckCircle2, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,13 +11,16 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Insights() {
   const { data: insights, isLoading } = useInsights();
   const applyMutation = useApplyInsight();
+  const { data: settings } = useQuery<AppSettings>({
+    queryKey: [api.settings.get.path]
+  });
 
   const potentialSavingsKwh = insights
     ?.filter(i => !i.applied)
     .reduce((sum, i) => sum + i.estimatedSavingsKwh, 0) || 0;
   
-  // ANTECO residential rate ₱12.82/kWh
-  const potentialSavingsPesos = potentialSavingsKwh * 12.82;
+  const rate = settings?.electricityRate || 12.82;
+  const potentialSavingsPesos = potentialSavingsKwh * rate;
 
   return (
     <div className="space-y-8 pb-10">
@@ -24,7 +30,7 @@ export default function Insights() {
         </div>
         <div>
           <h1 className="text-3xl font-display font-bold">AI Insights</h1>
-          <p className="text-muted-foreground mt-1">Smart recommendations based on ANTECO energy patterns.</p>
+          <p className="text-muted-foreground mt-1">Smart recommendations based on {settings?.electricityProvider || 'ANTECO'} energy patterns.</p>
         </div>
       </div>
 
