@@ -68,10 +68,8 @@ export class DatabaseStorage implements IStorage {
       const d = new Date(today);
       d.setDate(d.getDate() - (6 - i));
       
-      // Simulate historical data: baseline + random fluctuation
-      // But we'll make the "today" value (last index) reflect the actual current load
-      const baseline = 5 + Math.random() * 5;
-      const energyKwh = i === 6 ? (currentActiveLoadKw * 24) : baseline;
+      // Historical data is 0; only "today" (last index) shows real-time load
+      const energyKwh = i === 6 ? (currentActiveLoadKw * 24) : 0;
 
       return {
         date: d.toISOString(),

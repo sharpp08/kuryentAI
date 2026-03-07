@@ -38,10 +38,7 @@ export default function Dashboard() {
   // Current real-time load converted to daily kWh (W * 24h / 1000)
   const currentDailyKwh = (currentDraw * 24) / 1000;
   
-  // Projection logic: If no historical data, we rely solely on current active load
-  const projectedDailyUsage = hasData 
-    ? (avgHistoricalDailyUsage * 0.7) + (currentDailyKwh * 0.3)
-    : currentDailyKwh;
+  const projectedDailyUsage = currentDailyKwh;
   
   const estMonthlyUsage = projectedDailyUsage * 30;
   const estMonthlyBill = estMonthlyUsage * rate;
