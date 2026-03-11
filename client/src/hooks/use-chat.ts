@@ -11,7 +11,7 @@ export function useChat() {
     {
       id: "initial",
       role: "assistant",
-      content: "Kumusta! I'm your kuryentAI assistant. I can see your devices and live usage data — ask me anything about saving electricity, your ANTECO bill, or how to optimize your appliances!",
+      content: "Kumusta! Ako si Kuya Watts, your energy buddy dito sa kuryentAI! 😄 Makikita ko ang lahat ng devices mo at yung live usage ninyo — so tanungin mo ako kung paano makatipid sa kuryente, o kung bakit mataas ang bill. Tara, usap tayo!",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
