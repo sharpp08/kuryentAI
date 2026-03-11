@@ -46,28 +46,28 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-10">
       <div>
-        <h1 className="text-3xl font-display font-bold">kuryentAI Dashboard</h1>
-        <p className="text-muted-foreground mt-1">AI-driven energy management for the Philippines.</p>
+        <h1 className="text-2xl md:text-3xl font-display font-bold">kuryentAI Dashboard</h1>
+        <p className="text-muted-foreground mt-1 text-sm md:text-base">AI-driven energy management for the Philippines.</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Total Usage (30d)</CardTitle>
-              <Zap className="h-4 w-4 text-primary" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 md:pb-2 p-3 md:p-6">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Est. Usage (30d)</CardTitle>
+              <Zap className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
               {isLoadingOverview ? (
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-7 w-20" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold font-display">{estMonthlyUsage.toFixed(1)} <span className="text-lg text-muted-foreground">kWh</span></div>
+                  <div className="text-2xl md:text-3xl font-bold font-display">{estMonthlyUsage.toFixed(1)} <span className="text-sm md:text-lg text-muted-foreground">kWh</span></div>
                   <p className="text-xs text-primary mt-1 flex items-center gap-1">
                     <Activity className="h-3 w-3" />
-                    Average for PH Climate
+                    PH Climate
                   </p>
                 </>
               )}
@@ -78,56 +78,55 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active Devices</CardTitle>
-              <Cpu className="h-4 w-4 text-accent" />
+            <CardHeader className="flex flex-row items-center justify-between pb-1 md:pb-2 p-3 md:p-6">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Active Devices</CardTitle>
+              <Cpu className="h-3.5 w-3.5 md:h-4 md:w-4 text-accent" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
               {isLoadingDev ? (
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-7 w-20" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold font-display">{activeDevices} <span className="text-lg text-muted-foreground">/ {devices?.length}</span></div>
-                  <p className="text-xs text-muted-foreground mt-1">Drawing {currentDraw}W currently</p>
+                  <div className="text-2xl md:text-3xl font-bold font-display">{activeDevices} <span className="text-sm md:text-lg text-muted-foreground">/ {devices?.length}</span></div>
+                  <p className="text-xs text-muted-foreground mt-1">{currentDraw}W now</p>
                 </>
               )}
             </CardContent>
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="col-span-2 md:col-span-1">
           <Card className="glass-panel overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Est. Monthly Bill (2026)</CardTitle>
-              <span className="text-primary font-bold">₱</span>
+            <CardHeader className="flex flex-row items-center justify-between pb-1 md:pb-2 p-3 md:p-6">
+              <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">Est. Monthly Bill</CardTitle>
+              <span className="text-primary font-bold text-sm">₱</span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 pt-0 md:p-6 md:pt-0">
               {isLoadingOverview ? (
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-7 w-24" />
               ) : (
-                <div className="text-3xl font-bold font-display text-green-400">
+                <div className="text-2xl md:text-3xl font-bold font-display text-green-400">
                   ₱{estMonthlyBill.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground mt-1 flex flex-col gap-1">
-                <span>Based on ~{estMonthlyUsage.toFixed(0)} kWh/mo at {settings?.electricityProvider || 'ANTECO'} rates</span>
-                <span className="text-primary font-medium italic">* Includes ₱500 PEPS subsidy if qualified</span>
+              <p className="text-xs text-muted-foreground mt-1">
+                ~{estMonthlyUsage.toFixed(0)} kWh · {settings?.electricityProvider || 'ANTECO'}
               </p>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Main Chart */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="col-span-1 lg:col-span-2">
           <Card className="glass-panel h-full">
-            <CardHeader>
-              <CardTitle>Consumption Trend</CardTitle>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-lg">Consumption Trend</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-[350px] w-full">
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="h-[220px] md:h-[350px] w-full">
                 {isLoadingOverview ? (
                   <Skeleton className="h-full w-full rounded-xl" />
                 ) : (
@@ -192,11 +191,11 @@ export default function Dashboard() {
         {/* Pie Chart */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }}>
           <Card className="glass-panel h-full">
-            <CardHeader>
-              <CardTitle>By Category</CardTitle>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-lg">By Category</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-[300px] w-full flex items-center justify-center">
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="h-[220px] md:h-[300px] w-full flex items-center justify-center">
                 {isLoadingCat ? (
                   <Skeleton className="h-64 w-64 rounded-full" />
                 ) : (

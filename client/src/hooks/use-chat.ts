@@ -11,7 +11,7 @@ export function useChat() {
     {
       id: "initial",
       role: "assistant",
-      content: "Kumusta! I am your kuryentAI assistant. I can help you optimize your electricity usage and save on your Meralco bills. How can I help you today?",
+      content: "Kumusta! I'm your kuryentAI assistant. I can see your devices and live usage data — ask me anything about saving electricity, your ANTECO bill, or how to optimize your appliances!",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);

@@ -35,17 +35,21 @@ export function AiChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-6 z-50 w-[380px] h-[500px] flex flex-col glass-panel rounded-2xl overflow-hidden neon-glow-accent"
+            className={cn(
+              "fixed z-50 flex flex-col glass-panel overflow-hidden neon-glow-accent",
+              "inset-0 rounded-none",
+              "md:inset-auto md:bottom-20 md:right-6 md:w-[380px] md:h-[520px] md:rounded-2xl"
+            )}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-secondary/50">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-secondary/50 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-accent">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm">Energy Assistant</h3>
-                  <p className="text-xs text-muted-foreground">Always active</p>
+                  <p className="text-xs text-muted-foreground">Aware of your live usage</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8 rounded-full hover:bg-white/10">
@@ -54,43 +58,36 @@ export function AiChatWidget() {
             </div>
 
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4 pr-4" ref={scrollRef}>
-              {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-3 mt-20 opacity-50">
-                  <Sparkles className="h-10 w-10 text-accent" />
-                  <p className="text-sm">Hi! I'm your kuryentAI assistant.<br/>Ask me about your energy usage.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {messages.map((msg, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "flex w-max max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-2.5 text-sm",
-                        msg.role === "user"
-                          ? "ml-auto bg-primary text-primary-foreground rounded-br-none"
-                          : "bg-secondary text-foreground rounded-bl-none border border-border/50"
-                      )}
-                    >
-                      {msg.content}
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex w-max max-w-[85%] bg-secondary text-foreground rounded-2xl rounded-bl-none px-4 py-2.5 text-sm">
-                      <Loader2 className="h-4 w-4 animate-spin text-accent" />
-                    </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "flex w-max max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-2.5 text-sm",
+                    msg.role === "user"
+                      ? "ml-auto bg-primary text-primary-foreground rounded-br-none"
+                      : "bg-secondary text-foreground rounded-bl-none border border-border/50"
                   )}
+                >
+                  {msg.content || (isLoading && i === messages.length - 1 ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                  ) : null)}
+                </div>
+              ))}
+              {isLoading && messages[messages.length - 1]?.role === "user" && (
+                <div className="flex w-max max-w-[85%] bg-secondary text-foreground rounded-2xl rounded-bl-none px-4 py-2.5 text-sm border border-border/50">
+                  <Loader2 className="h-4 w-4 animate-spin text-accent" />
                 </div>
               )}
-            </ScrollArea>
+            </div>
 
             {/* Input */}
-            <div className="p-3 bg-background border-t border-border/50">
+            <div className="p-3 bg-background border-t border-border/50 shrink-0 pb-safe">
               <form onSubmit={handleSubmit} className="flex items-center gap-2">
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about saving energy..."
+                  placeholder="Ask about your devices or bill..."
                   className="flex-1 bg-secondary border-none rounded-full h-10 px-4 focus-visible:ring-1 focus-visible:ring-accent"
                 />
                 {isLoading ? (
@@ -108,14 +105,18 @@ export function AiChatWidget() {
         )}
       </AnimatePresence>
 
-      {/* Toggle Button */}
+      {/* Toggle Button — hidden on mobile when chat is open to avoid overlap */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-accent text-white shadow-xl neon-glow-accent flex items-center justify-center hover:bg-accent/90 transition-colors"
+        className={cn(
+          "fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full bg-accent text-white shadow-xl neon-glow-accent flex items-center justify-center hover:bg-accent/90 transition-colors",
+          "md:bottom-6 md:right-6",
+          isOpen && "hidden md:flex"
+        )}
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+        <MessageSquare className="h-6 w-6" />
       </motion.button>
     </>
   );

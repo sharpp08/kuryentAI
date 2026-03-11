@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import OpenAI from "openai";
 import { chatStorage } from "./storage";
+import { storage } from "../../storage";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
@@ -68,12 +69,49 @@ export function registerChatRoutes(app: Express): void {
       // Save user message
       await chatStorage.createMessage(conversationId, "user", content);
 
+      // Fetch live app context to inject into system prompt
+      const [devices, settings] = await Promise.all([
+        storage.getDevices(),
+        storage.getSettings(),
+      ]);
+      const activeDevices = devices.filter(d => d.status);
+      const totalActivePowerW = activeDevices.reduce((sum, d) => sum + d.currentPowerW, 0);
+      const estimatedMonthlyKwh = (totalActivePowerW * 24 * 30) / 1000;
+      const estimatedBill = estimatedMonthlyKwh * settings.electricityRate;
+
+      const systemPrompt = `You are kuryentAI, an expert AI electricity management assistant for Filipino households, specifically for customers of ${settings.electricityProvider} (${settings.householdName}).
+
+Current live data from the user's home:
+- Electricity provider: ${settings.electricityProvider}
+- Electricity rate: ₱${settings.electricityRate}/kWh
+- Monthly budget: ₱${settings.monthlyBudget}
+- Total devices: ${devices.length} (${activeDevices.length} currently active)
+- Current power draw: ${totalActivePowerW}W
+- Estimated monthly usage: ${estimatedMonthlyKwh.toFixed(1)} kWh
+- Estimated monthly bill: ₱${estimatedBill.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+
+Active devices right now:
+${activeDevices.length > 0 ? activeDevices.map(d => `  - ${d.name} (${d.category}): ${d.currentPowerW}W`).join('\n') : '  - None currently active'}
+
+Inactive devices:
+${devices.filter(d => !d.status).map(d => `  - ${d.name} (${d.category}): ${d.currentPowerW}W when on`).join('\n') || '  - None'}
+
+Guidelines:
+- Respond in a friendly, helpful tone. You may mix English and Filipino (Taglish) naturally.
+- Give specific advice based on the actual devices and rates shown above.
+- Reference ANTECO or the user's specific provider when relevant.
+- Help with saving on electricity bills, understanding consumption, and optimizing device usage.
+- Keep responses concise and actionable.`;
+
       // Get conversation history for context
       const messages = await chatStorage.getMessagesByConversation(conversationId);
-      const chatMessages = messages.map((m) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      }));
+      const chatMessages: { role: "user" | "assistant" | "system"; content: string }[] = [
+        { role: "system", content: systemPrompt },
+        ...messages.map((m) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+      ];
 
       // Set up SSE
       res.setHeader("Content-Type", "text/event-stream");
