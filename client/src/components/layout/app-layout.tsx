@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { BottomNav } from "./bottom-nav";
 import { AiChatWidget } from "../chat/ai-chat-widget";
 import { ReactNode } from "react";
 
 export function AppLayout({ children }: { children: ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
       <div className="hidden md:flex">
-        <Sidebar />
+        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       </div>
       <main className="flex-1 flex flex-col relative overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
