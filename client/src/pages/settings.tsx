@@ -8,7 +8,7 @@ import { insertSettingsSchema } from "@shared/schema";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@shared/routes";
-import { Settings as SettingsIcon, Save } from "lucide-react";
+import { Settings as SettingsIcon, Save, LogOut } from "lucide-react";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -146,6 +146,27 @@ export default function Settings() {
                 </Button>
               </form>
             </Form>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-panel border-border/50 border-red-500/20">
+          <CardHeader>
+            <CardTitle className="text-red-400">Switch Household</CardTitle>
+            <CardDescription>Go back to the login screen to enter a different household name.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              className="gap-2 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50"
+              onClick={() => {
+                localStorage.removeItem("kuryentai_household");
+                window.location.reload();
+              }}
+              data-testid="button-sign-out"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out / Change Household
+            </Button>
           </CardContent>
         </Card>
       </div>

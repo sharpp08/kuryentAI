@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Cpu, Lightbulb, Zap, Activity, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Cpu, Lightbulb, Zap, Activity, Settings, ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -69,18 +69,27 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      {/* Status footer */}
-      {!collapsed && (
-        <div className="p-3 border-t border-border/50">
+      {/* Household + status footer */}
+      <div className={cn("p-3 border-t border-border/50", collapsed && "flex justify-center")}>
+        {collapsed ? (
+          <div className="h-8 w-8 flex items-center justify-center rounded-full bg-primary/20 text-primary">
+            <Home className="h-4 w-4" />
+          </div>
+        ) : (
           <div className="rounded-xl bg-gradient-to-b from-primary/10 to-transparent p-3 border border-primary/20">
-            <p className="text-xs font-medium text-primary mb-1">System Status</p>
+            <div className="flex items-center gap-2 mb-2">
+              <Home className="h-3.5 w-3.5 text-primary shrink-0" />
+              <p className="text-xs font-medium text-primary truncate">
+                {localStorage.getItem("kuryentai_household") || "My Household"}
+              </p>
+            </div>
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shrink-0" />
-              <span className="text-xs text-muted-foreground">Optimal Efficiency</span>
+              <span className="text-xs text-muted-foreground">System Online</span>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Collapse Toggle Button */}
       <button

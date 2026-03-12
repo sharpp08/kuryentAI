@@ -4,11 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/app-layout";
+import { useState } from "react";
 
 import Dashboard from "@/pages/dashboard";
 import Devices from "@/pages/devices";
 import Insights from "@/pages/insights";
 import Settings from "@/pages/settings";
+import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +26,21 @@ function Router() {
 }
 
 function App() {
+  const [household, setHousehold] = useState<string | null>(
+    () => localStorage.getItem("kuryentai_household")
+  );
+
+  if (!household) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Login onLogin={(name) => setHousehold(name)} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
