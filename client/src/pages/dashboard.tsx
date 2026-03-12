@@ -4,6 +4,7 @@ import { useDevices } from "@/hooks/use-devices";
 import { AppSettings } from "@shared/schema";
 import { api } from "@shared/routes";
 import { useQuery } from "@tanstack/react-query";
+import { WeatherCard } from "@/components/dashboard/weather-card";
 import { format } from "date-fns";
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -117,6 +118,11 @@ export default function Dashboard() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Weather */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <WeatherCard />
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Main Chart */}
