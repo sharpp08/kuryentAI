@@ -2,37 +2,34 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 export const PH_CITIES = [
-  { name: "San Jose de Buenavista", province: "Antique", query: "San+Jose+de+Buenavista,Antique,Philippines" },
-  { name: "Kalibo", province: "Aklan", query: "Kalibo,Aklan,Philippines" },
-  { name: "Iloilo City", province: "Iloilo", query: "Iloilo+City,Philippines" },
-  { name: "Bacolod", province: "Negros Occidental", query: "Bacolod,Philippines" },
-  { name: "Manila", province: "Metro Manila", query: "Manila,Philippines" },
-  { name: "Quezon City", province: "Metro Manila", query: "Quezon+City,Philippines" },
-  { name: "Makati", province: "Metro Manila", query: "Makati,Philippines" },
-  { name: "Cebu City", province: "Cebu", query: "Cebu+City,Philippines" },
-  { name: "Davao City", province: "Davao del Sur", query: "Davao+City,Philippines" },
-  { name: "Cagayan de Oro", province: "Misamis Oriental", query: "Cagayan+de+Oro,Philippines" },
-  { name: "Zamboanga City", province: "Zamboanga del Sur", query: "Zamboanga+City,Philippines" },
-  { name: "General Santos", province: "South Cotabato", query: "General+Santos,Philippines" },
-  { name: "Antipolo", province: "Rizal", query: "Antipolo,Philippines" },
-  { name: "Taguig", province: "Metro Manila", query: "Taguig,Philippines" },
-  { name: "Baguio City", province: "Benguet", query: "Baguio+City,Philippines" },
-  { name: "Legazpi City", province: "Albay", query: "Legazpi+City,Philippines" },
-  { name: "Tacloban", province: "Leyte", query: "Tacloban,Philippines" },
+  { name: "San Jose de Buenavista", province: "Antique", lat: 10.7469, lon: 121.9344 },
+  { name: "Kalibo", province: "Aklan", lat: 11.7076, lon: 122.3639 },
+  { name: "Iloilo City", province: "Iloilo", lat: 10.7202, lon: 122.5621 },
+  { name: "Bacolod", province: "Negros Occidental", lat: 10.6765, lon: 122.9509 },
+  { name: "Manila", province: "Metro Manila", lat: 14.5995, lon: 120.9842 },
+  { name: "Quezon City", province: "Metro Manila", lat: 14.6760, lon: 121.0437 },
+  { name: "Makati", province: "Metro Manila", lat: 14.5547, lon: 121.0244 },
+  { name: "Cebu City", province: "Cebu", lat: 10.3157, lon: 123.8854 },
+  { name: "Davao City", province: "Davao del Sur", lat: 7.1907, lon: 125.4553 },
+  { name: "Cagayan de Oro", province: "Misamis Oriental", lat: 8.4542, lon: 124.6319 },
+  { name: "Zamboanga City", province: "Zamboanga del Sur", lat: 6.9214, lon: 122.0790 },
+  { name: "General Santos", province: "South Cotabato", lat: 6.1164, lon: 125.1716 },
+  { name: "Antipolo", province: "Rizal", lat: 14.6260, lon: 121.1764 },
+  { name: "Taguig", province: "Metro Manila", lat: 14.5176, lon: 121.0509 },
+  { name: "Baguio City", province: "Benguet", lat: 16.4023, lon: 120.5960 },
+  { name: "Legazpi City", province: "Albay", lat: 13.1391, lon: 123.7438 },
+  { name: "Tacloban", province: "Leyte", lat: 11.2543, lon: 125.0000 },
 ];
 
 function isRainingCode(code: number): boolean {
   const rainCodes = [
     176, 263, 266, 281, 284, 293, 296, 299, 302, 305, 308,
-    311, 314, 317, 320, 353, 356, 359, 362, 365,
-    386, 389
+    311, 314, 317, 320, 353, 356, 359, 362, 365, 386, 389
   ];
   return rainCodes.includes(code);
 }
 
 function wwoCodeToInfo(code: number, isDay: boolean): { label: string; icon: string } {
-  const isRaining = isRainingCode(code);
-
   if (code === 113) {
     return isDay
       ? { label: "Clear Sky", icon: "sun" }
@@ -54,27 +51,28 @@ function wwoCodeToInfo(code: number, isDay: boolean): { label: string; icon: str
   return { label: "Cloudy", icon: "cloud" };
 }
 
-function parseAstronomyTime(timeStr: string, dateStr: string): Date {
+function parseAstronomyTime(timeStr: string): { hour: number; minute: number } {
   const [time, period] = timeStr.trim().split(" ");
   const [hourStr, minuteStr] = time.split(":");
   let hour = parseInt(hourStr, 10);
   const minute = parseInt(minuteStr, 10);
   if (period === "PM" && hour !== 12) hour += 12;
   if (period === "AM" && hour === 12) hour = 0;
-  const [year, month, day] = dateStr.split("-").map(Number);
-  return new Date(year, month - 1, day, hour, minute, 0);
+  return { hour, minute };
 }
 
-function computeIsDay(astronomy: { sunrise: string; sunset: string }, dateStr: string): boolean {
+function computeIsDay(astronomy: { sunrise: string; sunset: string }): boolean {
   const now = new Date();
-  const phOffset = 8 * 60;
-  const localOffset = now.getTimezoneOffset();
-  const phNow = new Date(now.getTime() + (phOffset + localOffset) * 60 * 1000);
+  const phHour = (now.getUTCHours() + 8) % 24;
+  const phMinute = now.getUTCMinutes();
+  const currentMinutes = phHour * 60 + phMinute;
 
-  const sunrise = parseAstronomyTime(astronomy.sunrise, dateStr);
-  const sunset = parseAstronomyTime(astronomy.sunset, dateStr);
+  const rise = parseAstronomyTime(astronomy.sunrise);
+  const set = parseAstronomyTime(astronomy.sunset);
+  const riseMinutes = rise.hour * 60 + rise.minute;
+  const setMinutes = set.hour * 60 + set.minute;
 
-  return phNow >= sunrise && phNow < sunset;
+  return currentMinutes >= riseMinutes && currentMinutes < setMinutes;
 }
 
 export interface WeatherData {
@@ -102,28 +100,38 @@ export interface WeatherData {
   }[];
 }
 
-async function fetchWeather(query: string): Promise<WeatherData> {
-  const url = `https://wttr.in/${query}?format=j1`;
+async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
+  const url = `https://wttr.in/${lat},${lon}?format=j1`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch weather");
-  const data = await res.json();
+  if (!res.ok) throw new Error(`Weather fetch failed: ${res.status}`);
+
+  const text = await res.text();
+  let data: any;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error("Invalid weather response");
+  }
+
+  if (!data.current_condition?.[0] || !data.weather?.[0]) {
+    throw new Error("Unexpected weather data structure");
+  }
 
   const cur = data.current_condition[0];
   const curCode = parseInt(cur.weatherCode, 10);
   const todayAstronomy = data.weather[0]?.astronomy?.[0];
-  const todayDate = data.weather[0]?.date ?? new Date().toISOString().slice(0, 10);
 
-  const isDay = todayAstronomy ? computeIsDay(todayAstronomy, todayDate) : true;
+  const isDay = todayAstronomy ? computeIsDay(todayAstronomy) : (new Date().getUTCHours() + 8) % 24 >= 6;
   const { label, icon } = wwoCodeToInfo(curCode, isDay);
 
-  const daily = data.weather.map((day: any) => {
-    const midday = day.hourly[4] ?? day.hourly[0];
-    const code = parseInt(midday.weatherCode, 10);
+  const daily = (data.weather as any[]).map((day) => {
+    const midday = day.hourly?.[4] ?? day.hourly?.[0] ?? {};
+    const code = parseInt(midday.weatherCode ?? "113", 10);
     const { label, icon } = wwoCodeToInfo(code, true);
     return {
-      date: day.date,
-      tempMax: parseInt(day.maxtempC, 10),
-      tempMin: parseInt(day.mintempC, 10),
+      date: day.date ?? "",
+      tempMax: parseInt(day.maxtempC ?? "0", 10),
+      tempMin: parseInt(day.mintempC ?? "0", 10),
       weatherCode: code,
       description: label,
       icon,
@@ -133,10 +141,10 @@ async function fetchWeather(query: string): Promise<WeatherData> {
 
   return {
     current: {
-      temp: parseInt(cur.temp_C, 10),
-      feelsLike: parseInt(cur.FeelsLikeC, 10),
-      humidity: parseInt(cur.humidity, 10),
-      windspeed: parseInt(cur.windspeedKmph, 10),
+      temp: parseInt(cur.temp_C ?? "0", 10),
+      feelsLike: parseInt(cur.FeelsLikeC ?? "0", 10),
+      humidity: parseInt(cur.humidity ?? "0", 10),
+      windspeed: parseInt(cur.windspeedKmph ?? "0", 10),
       weatherCode: curCode,
       description: label,
       icon,
@@ -167,8 +175,8 @@ export function useWeather() {
   };
 
   const { data, isLoading, error } = useQuery<WeatherData>({
-    queryKey: ["weather", selectedCity.query],
-    queryFn: () => fetchWeather(selectedCity.query),
+    queryKey: ["weather", selectedCity.lat, selectedCity.lon],
+    queryFn: () => fetchWeather(selectedCity.lat, selectedCity.lon),
     staleTime: 1000 * 60 * 10,
     refetchInterval: 1000 * 60 * 30,
     retry: 2,
