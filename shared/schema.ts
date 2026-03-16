@@ -34,7 +34,7 @@ export const appSettings = pgTable("app_settings", {
   id: serial("id").primaryKey(),
   householdName: text("household_name").notNull().default("My Filipino Home"),
   electricityProvider: text("electricity_provider").notNull().default("ANTECO"),
-  electricityRate: real("electricity_rate").notNull().default(0.128),
+  electricityRate: real("electricity_rate").notNull().default(13.8161),
   monthlyBudget: integer("monthly_budget").notNull().default(5000),
 });
 
