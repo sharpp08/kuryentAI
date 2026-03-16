@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export const PH_CITIES = [
   { name: "San Jose de Buenavista", province: "Antique", lat: 10.7469, lon: 121.9344 },
+  { name: "Belison", province: "Antique", lat: 10.8333, lon: 121.9833 },
   { name: "Kalibo", province: "Aklan", lat: 11.7076, lon: 122.3639 },
   { name: "Iloilo City", province: "Iloilo", lat: 10.7202, lon: 122.5621 },
   { name: "Bacolod", province: "Negros Occidental", lat: 10.6765, lon: 122.9509 },
