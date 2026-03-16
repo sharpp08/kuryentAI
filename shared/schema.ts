@@ -9,6 +9,7 @@ export const devices = pgTable("devices", {
   category: text("category").notNull(), // e.g., HVAC, Lighting, Appliances
   status: boolean("status").default(false).notNull(), // true = on, false = off
   currentPowerW: integer("current_power_w").notNull().default(0), // Current power draw in Watts
+  dailyHoursUsed: integer("daily_hours_used").notNull().default(8), // Hours per day this device runs
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

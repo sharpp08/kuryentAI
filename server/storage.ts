@@ -60,16 +60,16 @@ export class DatabaseStorage implements IStorage {
   async getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]> {
     const today = new Date();
     const allDevices = await this.getDevices();
-    const currentActiveLoadKw = allDevices
+    const currentDailyKwh = allDevices
       .filter(d => d.status)
-      .reduce((sum, d) => sum + d.currentPowerW, 0) / 1000;
+      .reduce((sum, d) => sum + (d.currentPowerW * d.dailyHoursUsed) / 1000, 0);
 
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date(today);
       d.setDate(d.getDate() - (6 - i));
       
       // Historical data is 0; only "today" (last index) shows real-time load
-      const energyKwh = i === 6 ? (currentActiveLoadKw * 24) : 0;
+      const energyKwh = i === 6 ? currentDailyKwh : 0;
 
       return {
         date: d.toISOString(),
@@ -80,17 +80,17 @@ export class DatabaseStorage implements IStorage {
 
   async getConsumptionByCategory(): Promise<{ category: string, percentage: number, totalKwh: number }[]> {
     const allDevices = await this.getDevices();
-    const categories: Record<string, number> = {};
-    let totalPower = 0;
+    const catKwh: Record<string, number> = {};
+    let totalDailyKwh = 0;
 
     allDevices.forEach(d => {
-      const p = d.status ? d.currentPowerW : 0;
-      categories[d.category] = (categories[d.category] || 0) + p;
-      totalPower += p;
+      const kwh = d.status ? (d.currentPowerW * d.dailyHoursUsed) / 1000 : 0;
+      catKwh[d.category] = (catKwh[d.category] || 0) + kwh;
+      totalDailyKwh += kwh;
     });
 
     // If no devices are on, show 0 for all existing categories
-    if (totalPower === 0) {
+    if (totalDailyKwh === 0) {
       const uniqueCats = [...new Set(allDevices.map(d => d.category))];
       return uniqueCats.map(cat => ({
         category: cat || "Uncategorized",
@@ -99,10 +99,10 @@ export class DatabaseStorage implements IStorage {
       }));
     }
 
-    return Object.entries(categories).map(([category, power]) => ({
+    return Object.entries(catKwh).map(([category, kwh]) => ({
       category: category || "Uncategorized",
-      percentage: Number(((power / totalPower) * 100).toFixed(1)),
-      totalKwh: Number(((power * 24) / 1000).toFixed(2)) // Projected daily kWh
+      percentage: Number(((kwh / totalDailyKwh) * 100).toFixed(1)),
+      totalKwh: Number(kwh.toFixed(2))
     }));
   }
 
