@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export const PH_CITIES = [
   { name: "San Jose de Buenavista", province: "Antique", lat: 10.7469, lon: 121.9344 },
@@ -56,12 +56,13 @@ export interface WeatherData {
 }
 
 async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,windspeed_10m,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FManila&forecast_days=5`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FManila&forecast_days=7`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch weather");
   const data = await res.json();
 
-  const currentCode = data.current.weathercode;
+  const currentCode = data.current.weather_code ?? data.current.weathercode ?? 0;
+  const windspeed = data.current.wind_speed_10m ?? data.current.windspeed_10m ?? 0;
   const { label, icon } = getWeatherDescription(currentCode);
 
   return {
@@ -69,13 +70,13 @@ async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
       temp: Math.round(data.current.temperature_2m),
       feelsLike: Math.round(data.current.apparent_temperature),
       humidity: Math.round(data.current.relative_humidity_2m),
-      windspeed: Math.round(data.current.windspeed_10m),
+      windspeed: Math.round(windspeed),
       weatherCode: currentCode,
       description: label,
       icon,
     },
     daily: data.daily.time.map((date: string, i: number) => {
-      const code = data.daily.weathercode[i];
+      const code = data.daily.weather_code?.[i] ?? data.daily.weathercode?.[i] ?? 0;
       const { label, icon } = getWeatherDescription(code);
       return {
         date,
@@ -98,7 +99,7 @@ export function useWeather() {
       const found = PH_CITIES.find(c => c.name === saved);
       if (found) return found;
     }
-    return PH_CITIES[0]; // Default: San Jose de Buenavista (ANTECO HQ)
+    return PH_CITIES[0];
   });
 
   const saveCity = (city: typeof PH_CITIES[0]) => {
@@ -109,7 +110,8 @@ export function useWeather() {
   const { data, isLoading, error } = useQuery<WeatherData>({
     queryKey: ["weather", selectedCity.lat, selectedCity.lon],
     queryFn: () => fetchWeather(selectedCity.lat, selectedCity.lon),
-    staleTime: 1000 * 60 * 15, // refresh every 15 min
+    staleTime: 1000 * 60 * 10,
+    refetchInterval: 1000 * 60 * 30,
     retry: 2,
   });
 

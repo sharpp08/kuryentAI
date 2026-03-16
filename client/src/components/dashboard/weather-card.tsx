@@ -6,7 +6,7 @@ import {
   Sun, Cloud, CloudSun, CloudRain, CloudDrizzle, CloudLightning,
   CloudFog, Snowflake, Wind, Droplets, Thermometer
 } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, isToday, isTomorrow } from "date-fns";
 
 function WeatherIcon({ icon, className }: { icon: string; className?: string }) {
   const props = { className: className || "h-8 w-8" };
@@ -33,6 +33,13 @@ function getIconColor(icon: string) {
     case "cloud-fog": return "text-gray-400";
     default: return "text-muted-foreground";
   }
+}
+
+function getDayLabel(dateStr: string) {
+  const date = parseISO(dateStr);
+  if (isToday(date)) return "Today";
+  if (isTomorrow(date)) return "Tmrw";
+  return format(date, "EEE");
 }
 
 export function WeatherCard() {
@@ -68,8 +75,8 @@ export function WeatherCard() {
             <Skeleton className="h-16 w-40" />
             <Skeleton className="h-4 w-32" />
             <div className="flex gap-3 mt-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 w-16 rounded-xl" />
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 w-16 rounded-xl" />
               ))}
             </div>
           </div>
@@ -103,21 +110,24 @@ export function WeatherCard() {
               </div>
             </div>
 
-            {/* 5-day forecast */}
+            {/* 7-day forecast */}
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {weather.daily.map((day, i) => (
+              {weather.daily.map((day) => (
                 <div
                   key={day.date}
-                  className="flex-shrink-0 flex flex-col items-center gap-1.5 rounded-xl bg-secondary/50 border border-border/40 px-3 py-2.5 min-w-[64px]"
+                  className="flex-shrink-0 flex flex-col items-center gap-1 rounded-xl bg-secondary/50 border border-border/40 px-3 py-2.5 min-w-[62px]"
                 >
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    {i === 0 ? "Today" : format(parseISO(day.date), "EEE")}
+                    {getDayLabel(day.date)}
                   </span>
                   <div className={getIconColor(day.icon)}>
                     <WeatherIcon icon={day.icon} className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-bold">{day.tempMax}°</span>
-                  <span className="text-[10px] text-muted-foreground">{day.tempMin}°</span>
+                  <span className="text-xs font-bold">{day.tempMax}°C</span>
+                  <span className="text-[10px] text-muted-foreground">{day.tempMin}°C</span>
+                  <span className="text-[9px] text-muted-foreground/70 text-center leading-tight mt-0.5 line-clamp-1">
+                    {day.description}
+                  </span>
                 </div>
               ))}
             </div>
@@ -130,7 +140,7 @@ export function WeatherCard() {
             )}
             {weather.current.temp <= 24 && (
               <div className="text-xs bg-blue-500/10 border border-blue-500/20 rounded-lg px-3 py-2 text-blue-400">
-                😎 Cool weather today — great time to turn off the aircon and save!
+                😎 Cool weather today ({weather.current.temp}°C) — great time to turn off the aircon and save!
               </div>
             )}
           </div>
