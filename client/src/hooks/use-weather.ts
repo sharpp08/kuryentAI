@@ -2,37 +2,37 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 export const PH_CITIES = [
-  { name: "San Jose de Buenavista", province: "Antique", lat: 10.7469, lon: 121.9344 },
-  { name: "Kalibo", province: "Aklan", lat: 11.7076, lon: 122.3639 },
-  { name: "Iloilo City", province: "Iloilo", lat: 10.7202, lon: 122.5621 },
-  { name: "Bacolod", province: "Negros Occidental", lat: 10.6765, lon: 122.9509 },
-  { name: "Manila", province: "Metro Manila", lat: 14.5995, lon: 120.9842 },
-  { name: "Quezon City", province: "Metro Manila", lat: 14.6760, lon: 121.0437 },
-  { name: "Makati", province: "Metro Manila", lat: 14.5547, lon: 121.0244 },
-  { name: "Cebu City", province: "Cebu", lat: 10.3157, lon: 123.8854 },
-  { name: "Davao City", province: "Davao del Sur", lat: 7.1907, lon: 125.4553 },
-  { name: "Cagayan de Oro", province: "Misamis Oriental", lat: 8.4542, lon: 124.6319 },
-  { name: "Zamboanga City", province: "Zamboanga del Sur", lat: 6.9214, lon: 122.0790 },
-  { name: "General Santos", province: "South Cotabato", lat: 6.1164, lon: 125.1716 },
-  { name: "Antipolo", province: "Rizal", lat: 14.6260, lon: 121.1764 },
-  { name: "Taguig", province: "Metro Manila", lat: 14.5176, lon: 121.0509 },
-  { name: "Baguio City", province: "Benguet", lat: 16.4023, lon: 120.5960 },
-  { name: "Legazpi City", province: "Albay", lat: 13.1391, lon: 123.7438 },
-  { name: "Tacloban", province: "Leyte", lat: 11.2543, lon: 125.0000 },
+  { name: "San Jose de Buenavista", province: "Antique", query: "San+Jose+de+Buenavista,Antique,Philippines" },
+  { name: "Kalibo", province: "Aklan", query: "Kalibo,Aklan,Philippines" },
+  { name: "Iloilo City", province: "Iloilo", query: "Iloilo+City,Philippines" },
+  { name: "Bacolod", province: "Negros Occidental", query: "Bacolod,Philippines" },
+  { name: "Manila", province: "Metro Manila", query: "Manila,Philippines" },
+  { name: "Quezon City", province: "Metro Manila", query: "Quezon+City,Philippines" },
+  { name: "Makati", province: "Metro Manila", query: "Makati,Philippines" },
+  { name: "Cebu City", province: "Cebu", query: "Cebu+City,Philippines" },
+  { name: "Davao City", province: "Davao del Sur", query: "Davao+City,Philippines" },
+  { name: "Cagayan de Oro", province: "Misamis Oriental", query: "Cagayan+de+Oro,Philippines" },
+  { name: "Zamboanga City", province: "Zamboanga del Sur", query: "Zamboanga+City,Philippines" },
+  { name: "General Santos", province: "South Cotabato", query: "General+Santos,Philippines" },
+  { name: "Antipolo", province: "Rizal", query: "Antipolo,Philippines" },
+  { name: "Taguig", province: "Metro Manila", query: "Taguig,Philippines" },
+  { name: "Baguio City", province: "Benguet", query: "Baguio+City,Philippines" },
+  { name: "Legazpi City", province: "Albay", query: "Legazpi+City,Philippines" },
+  { name: "Tacloban", province: "Leyte", query: "Tacloban,Philippines" },
 ];
 
-export function getWeatherDescription(code: number): { label: string; icon: string } {
-  if (code === 0) return { label: "Clear Sky", icon: "sun" };
-  if (code <= 2) return { label: "Partly Cloudy", icon: "cloud-sun" };
-  if (code === 3) return { label: "Overcast", icon: "cloud" };
-  if (code <= 49) return { label: "Foggy", icon: "cloud-fog" };
-  if (code <= 55) return { label: "Drizzle", icon: "cloud-drizzle" };
-  if (code <= 65) return { label: "Rain", icon: "cloud-rain" };
-  if (code <= 67) return { label: "Freezing Rain", icon: "cloud-rain" };
-  if (code <= 77) return { label: "Snow", icon: "snowflake" };
-  if (code <= 82) return { label: "Rain Showers", icon: "cloud-rain" };
-  if (code <= 99) return { label: "Thunderstorm", icon: "cloud-lightning" };
-  return { label: "Unknown", icon: "cloud" };
+function wwoCodeToInfo(code: number): { label: string; icon: string } {
+  if (code === 113) return { label: "Clear Sky", icon: "sun" };
+  if (code === 116) return { label: "Partly Cloudy", icon: "cloud-sun" };
+  if (code === 119 || code === 122) return { label: "Cloudy", icon: "cloud" };
+  if (code === 143 || code === 248 || code === 260) return { label: "Foggy", icon: "cloud-fog" };
+  if ([176, 293, 296].includes(code)) return { label: "Light Rain", icon: "cloud-drizzle" };
+  if ([263, 266, 281, 284].includes(code)) return { label: "Drizzle", icon: "cloud-drizzle" };
+  if ([299, 302, 305, 308, 353, 356, 359].includes(code)) return { label: "Rain", icon: "cloud-rain" };
+  if ([311, 314, 317, 320, 362, 365].includes(code)) return { label: "Sleet", icon: "cloud-rain" };
+  if ([179, 182, 185, 227, 230, 323, 326, 329, 332, 335, 338, 350, 368, 371, 374, 377].includes(code)) return { label: "Snow", icon: "snowflake" };
+  if ([200, 386, 389, 392, 395].includes(code)) return { label: "Thunderstorm", icon: "cloud-lightning" };
+  return { label: "Cloudy", icon: "cloud" };
 }
 
 export interface WeatherData {
@@ -55,38 +55,41 @@ export interface WeatherData {
   }[];
 }
 
-async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FManila&forecast_days=7`;
+async function fetchWeather(query: string): Promise<WeatherData> {
+  const url = `https://wttr.in/${query}?format=j1`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch weather");
   const data = await res.json();
 
-  const currentCode = data.current.weather_code ?? data.current.weathercode ?? 0;
-  const windspeed = data.current.wind_speed_10m ?? data.current.windspeed_10m ?? 0;
-  const { label, icon } = getWeatherDescription(currentCode);
+  const cur = data.current_condition[0];
+  const curCode = parseInt(cur.weatherCode, 10);
+  const { label, icon } = wwoCodeToInfo(curCode);
+
+  const daily = data.weather.map((day: any) => {
+    const midday = day.hourly[4] ?? day.hourly[0];
+    const code = parseInt(midday.weatherCode, 10);
+    const { label, icon } = wwoCodeToInfo(code);
+    return {
+      date: day.date,
+      tempMax: parseInt(day.maxtempC, 10),
+      tempMin: parseInt(day.mintempC, 10),
+      weatherCode: code,
+      description: label,
+      icon,
+    };
+  });
 
   return {
     current: {
-      temp: Math.round(data.current.temperature_2m),
-      feelsLike: Math.round(data.current.apparent_temperature),
-      humidity: Math.round(data.current.relative_humidity_2m),
-      windspeed: Math.round(windspeed),
-      weatherCode: currentCode,
+      temp: parseInt(cur.temp_C, 10),
+      feelsLike: parseInt(cur.FeelsLikeC, 10),
+      humidity: parseInt(cur.humidity, 10),
+      windspeed: parseInt(cur.windspeedKmph, 10),
+      weatherCode: curCode,
       description: label,
       icon,
     },
-    daily: data.daily.time.map((date: string, i: number) => {
-      const code = data.daily.weather_code?.[i] ?? data.daily.weathercode?.[i] ?? 0;
-      const { label, icon } = getWeatherDescription(code);
-      return {
-        date,
-        tempMax: Math.round(data.daily.temperature_2m_max[i]),
-        tempMin: Math.round(data.daily.temperature_2m_min[i]),
-        weatherCode: code,
-        description: label,
-        icon,
-      };
-    }),
+    daily,
   };
 }
 
@@ -108,8 +111,8 @@ export function useWeather() {
   };
 
   const { data, isLoading, error } = useQuery<WeatherData>({
-    queryKey: ["weather", selectedCity.lat, selectedCity.lon],
-    queryFn: () => fetchWeather(selectedCity.lat, selectedCity.lon),
+    queryKey: ["weather", selectedCity.query],
+    queryFn: () => fetchWeather(selectedCity.query),
     staleTime: 1000 * 60 * 10,
     refetchInterval: 1000 * 60 * 30,
     retry: 2,
