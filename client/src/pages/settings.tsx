@@ -42,7 +42,7 @@ export default function Settings() {
     values: settings || {
       householdName: "My Filipino Home",
       electricityProvider: "ANTECO",
-      electricityRate: 12.82,
+      electricityRate: 0.128,
       monthlyBudget: 5000,
     },
   });

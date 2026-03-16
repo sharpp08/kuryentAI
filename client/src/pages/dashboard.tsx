@@ -29,7 +29,7 @@ export default function Dashboard() {
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
   // Calculate estimated monthly usage and bill
-  const rate = settings?.electricityRate || 12.82;
+  const rate = settings?.electricityRate || 0.128;
   const hasData = overview && overview.length > 0 && overview.some(item => item.energyKwh > 0);
   
   const avgHistoricalDailyUsage = hasData 

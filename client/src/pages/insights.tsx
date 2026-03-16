@@ -19,7 +19,7 @@ export default function Insights() {
     ?.filter(i => !i.applied)
     .reduce((sum, i) => sum + i.estimatedSavingsKwh, 0) || 0;
   
-  const rate = settings?.electricityRate || 12.82;
+  const rate = settings?.electricityRate || 0.128;
   const potentialSavingsPesos = potentialSavingsKwh * rate;
 
   return (

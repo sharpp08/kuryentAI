@@ -125,7 +125,7 @@ export class DatabaseStorage implements IStorage {
       const [newSettings] = await db.insert(appSettings).values({
         householdName: "My Filipino Home",
         electricityProvider: "ANTECO",
-        electricityRate: 12.82,
+        electricityRate: 0.128,
         monthlyBudget: 5000,
       }).returning();
       return newSettings;
