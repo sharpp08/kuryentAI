@@ -62,6 +62,28 @@ export async function registerRoutes(
     }
   });
 
+  app.patch(api.devices.update.path, async (req, res) => {
+    try {
+      const data = api.devices.update.input.parse(req.body);
+      const device = await storage.updateDevice(Number(req.params.id), data);
+      if (!device) {
+        return res.status(404).json({ message: "Device not found" });
+      }
+      res.json(device);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message });
+      }
+      throw err;
+    }
+  });
+
+  app.delete(api.devices.delete.path, async (req, res) => {
+    const success = await storage.deleteDevice(Number(req.params.id));
+    if (!success) return res.status(404).json({ message: "Device not found" });
+    res.json({ success: true });
+  });
+
   // --- Consumption ---
   app.get(api.consumption.overview.path, async (req, res) => {
     const overview = await storage.getConsumptionOverview();

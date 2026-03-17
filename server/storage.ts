@@ -20,6 +20,8 @@ export interface IStorage {
   getDevice(id: number): Promise<Device | undefined>;
   createDevice(device: InsertDevice): Promise<Device>;
   updateDeviceStatus(id: number, status: boolean): Promise<Device | undefined>;
+  updateDevice(id: number, data: Partial<InsertDevice>): Promise<Device | undefined>;
+  deleteDevice(id: number): Promise<boolean>;
   
   // Consumption
   getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]>;
@@ -55,6 +57,19 @@ export class DatabaseStorage implements IStorage {
       .where(eq(devices.id, id))
       .returning();
     return updated;
+  }
+
+  async updateDevice(id: number, data: Partial<InsertDevice>): Promise<Device | undefined> {
+    const [updated] = await db.update(devices)
+      .set(data)
+      .where(eq(devices.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteDevice(id: number): Promise<boolean> {
+    const result = await db.delete(devices).where(eq(devices.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getConsumptionOverview(): Promise<{ date: string, energyKwh: number }[]> {

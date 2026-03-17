@@ -49,6 +49,28 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
+    update: {
+      method: 'PATCH' as const,
+      path: '/api/devices/:id' as const,
+      input: z.object({
+        name: z.string().optional(),
+        currentPowerW: z.number().optional(),
+        dailyHoursUsed: z.number().min(1).max(24).optional(),
+        category: z.string().optional(),
+      }),
+      responses: {
+        200: z.custom<typeof devices.$inferSelect>(),
+        404: errorSchemas.notFound,
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/devices/:id' as const,
+      responses: {
+        200: z.object({ success: z.boolean() }),
+        404: errorSchemas.notFound,
+      },
+    },
   },
   consumption: {
     overview: {

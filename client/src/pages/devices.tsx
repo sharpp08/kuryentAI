@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useDevices, useToggleDevice, useCreateDevice } from "@/hooks/use-devices";
+import { useDevices, useToggleDevice, useCreateDevice, useUpdateDevice, useDeleteDevice } from "@/hooks/use-devices";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Power, Cpu, Monitor, Snowflake, Lightbulb, Plus } from "lucide-react";
+import { Power, Cpu, Monitor, Snowflake, Lightbulb, Plus, Pencil, Trash2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -29,56 +29,75 @@ export default function Devices() {
   const { data: devices, isLoading } = useDevices();
   const toggleMutation = useToggleDevice();
   const createMutation = useCreateDevice();
+  const updateMutation = useUpdateDevice();
+  const deleteMutation = useDeleteDevice();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
-  const [prefill, setPrefill] = useState<Partial<Device> | null>(null);
 
-  const form = useForm({
+  const [addOpen, setAddOpen] = useState(false);
+  const [prefill, setPrefill] = useState<Partial<Device> | null>(null);
+  const [editDevice, setEditDevice] = useState<Device | null>(null);
+
+  const addForm = useForm({
     resolver: zodResolver(insertDeviceSchema),
-    defaultValues: {
-      name: "",
-      category: "Appliances",
-      currentPowerW: 0,
-      dailyHoursUsed: 8,
-      status: false,
-    },
+    defaultValues: { name: "", category: "Appliances", currentPowerW: 0, dailyHoursUsed: 8, status: false },
+  });
+
+  const editForm = useForm({
+    defaultValues: { name: "", category: "Appliances", currentPowerW: 0, dailyHoursUsed: 8 },
   });
 
   useEffect(() => {
-    if (open && prefill) {
-      form.reset({
+    if (addOpen && prefill) {
+      addForm.reset({
         name: prefill.name || "",
         category: prefill.category || "Appliances",
         currentPowerW: prefill.currentPowerW || 0,
         dailyHoursUsed: prefill.dailyHoursUsed ?? 8,
         status: false,
       });
-    } else if (open && !prefill) {
-      form.reset({ name: "", category: "Appliances", currentPowerW: 0, dailyHoursUsed: 8, status: false });
+    } else if (addOpen && !prefill) {
+      addForm.reset({ name: "", category: "Appliances", currentPowerW: 0, dailyHoursUsed: 8, status: false });
     }
-  }, [open, prefill]);
+  }, [addOpen, prefill]);
 
-  const openForNew = () => {
-    setPrefill(null);
-    setOpen(true);
-  };
+  useEffect(() => {
+    if (editDevice) {
+      editForm.reset({
+        name: editDevice.name,
+        category: editDevice.category,
+        currentPowerW: editDevice.currentPowerW,
+        dailyHoursUsed: editDevice.dailyHoursUsed,
+      });
+    }
+  }, [editDevice]);
 
-  const openForDuplicate = (device: Device) => {
-    setPrefill(device);
-    setOpen(true);
-  };
-
-  const onSubmit = (data: any) => {
+  const onAdd = (data: any) => {
     createMutation.mutate(data, {
       onSuccess: () => {
-        toast({ title: "Device added", description: `${data.name} has been added to your system.` });
-        setOpen(false);
+        toast({ title: "Device added", description: `${data.name} has been added.` });
+        setAddOpen(false);
         setPrefill(null);
-        form.reset();
+        addForm.reset();
       },
-      onError: (error: any) => {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+      onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+    });
+  };
+
+  const onEdit = (data: any) => {
+    if (!editDevice) return;
+    updateMutation.mutate({ id: editDevice.id, ...data }, {
+      onSuccess: () => {
+        toast({ title: "Device updated", description: `${data.name} has been updated.` });
+        setEditDevice(null);
       },
+      onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
+    });
+  };
+
+  const onDelete = (device: Device) => {
+    deleteMutation.mutate(device.id, {
+      onSuccess: () => toast({ title: "Device removed", description: `${device.name} was deleted.` }),
+      onError: (err: any) => toast({ title: "Error", description: err.message, variant: "destructive" }),
     });
   };
 
@@ -90,7 +109,7 @@ export default function Devices() {
           <p className="text-muted-foreground mt-1 text-sm">Monitor and control your appliances.</p>
         </div>
         <div className="flex items-center gap-4">
-          <Button onClick={openForNew} className="gap-2 bg-primary hover:bg-primary/90">
+          <Button onClick={() => { setPrefill(null); setAddOpen(true); }} className="gap-2 bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4" />
             Add Device
           </Button>
@@ -106,7 +125,7 @@ export default function Devices() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {isLoading ? (
           Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[180px] rounded-2xl" />
+            <Skeleton key={i} className="h-[200px] rounded-2xl" />
           ))
         ) : (
           <>
@@ -122,17 +141,33 @@ export default function Devices() {
                   key={device.id}
                 >
                   <Card className={cn(
-                    "glass-panel overflow-hidden transition-all duration-300 h-[180px] group relative",
+                    "glass-panel overflow-hidden transition-all duration-300 h-[200px] group relative",
                     device.status ? "border-primary/30 shadow-[0_0_15px_-5px_hsl(var(--primary)/0.2)]" : "opacity-80"
                   )}>
-                    {/* Quick-add duplicate button */}
-                    <button
-                      onClick={() => openForDuplicate(device)}
-                      title="Add another like this"
-                      className="absolute top-2 left-2 z-10 h-6 w-6 rounded-full bg-primary/20 text-primary opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white flex items-center justify-center shadow"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
+                    {/* Action buttons — visible on hover */}
+                    <div className="absolute top-2 left-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                      <button
+                        onClick={() => { setPrefill(device); setAddOpen(true); }}
+                        title="Add another like this"
+                        className="h-6 w-6 rounded-full bg-primary/20 text-primary hover:bg-primary hover:text-white flex items-center justify-center shadow transition-colors"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setEditDevice(device)}
+                        title="Edit device"
+                        className="h-6 w-6 rounded-full bg-primary/20 text-primary hover:bg-primary hover:text-white flex items-center justify-center shadow transition-colors"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(device)}
+                        title="Delete device"
+                        className="h-6 w-6 rounded-full bg-destructive/20 text-destructive hover:bg-destructive hover:text-white flex items-center justify-center shadow transition-colors"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
 
                     <CardContent className="p-5 flex flex-col h-full justify-between">
                       <div className="flex items-start justify-between">
@@ -156,12 +191,15 @@ export default function Devices() {
                           <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
                             {device.category}
                           </span>
-                            <div className="flex flex-col items-end gap-0.5">
+                          <div className="flex flex-col items-end gap-0.5">
                             <div className="flex items-center gap-1.5 text-sm font-medium font-mono">
                               <Power className={cn("h-3.5 w-3.5", device.status ? "text-primary" : "text-muted-foreground")} />
                               {device.status ? `${device.currentPowerW}W` : '0W'}
                             </div>
-                            <span className="text-xs text-muted-foreground">{device.dailyHoursUsed}h/day</span>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {device.dailyHoursUsed}h/day
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -178,8 +216,8 @@ export default function Devices() {
               transition={{ delay: (devices?.length || 0) * 0.05 }}
             >
               <button
-                onClick={openForNew}
-                className="w-full h-[180px] rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 flex flex-col items-center justify-center gap-3 group"
+                onClick={() => { setPrefill(null); setAddOpen(true); }}
+                className="w-full h-[200px] rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 flex flex-col items-center justify-center gap-3 group"
               >
                 <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors text-muted-foreground">
                   <Plus className="h-5 w-5" />
@@ -194,90 +232,129 @@ export default function Devices() {
       </div>
 
       {/* Add Device Dialog */}
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setPrefill(null); }}>
+      <Dialog open={addOpen} onOpenChange={(v) => { setAddOpen(v); if (!v) setPrefill(null); }}>
         <DialogContent className="glass-panel border-border/50">
           <DialogHeader>
             <DialogTitle>{prefill ? `Add another like "${prefill.name}"` : "Add New Device"}</DialogTitle>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Device Name</FormLabel>
+          <Form {...addForm}>
+            <form onSubmit={addForm.handleSubmit(onAdd)} className="space-y-4 pt-4">
+              <FormField control={addForm.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Device Name</FormLabel>
+                  <FormControl><Input placeholder="e.g. Living Room Aircon" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={addForm.control} name="category" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <Input placeholder="e.g. Living Room Aircon" {...field} />
+                      <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
-                        <SelectItem value="Lighting">Lighting</SelectItem>
-                        <SelectItem value="Appliances">Appliances</SelectItem>
-                        <SelectItem value="IT">IT / Electronics</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="currentPowerW"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Wattage (W)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        {...field}
-                        onChange={e => field.onChange(parseInt(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="dailyHoursUsed"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hours Used Per Day</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={24}
-                        placeholder="8"
-                        {...field}
-                        onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    <SelectContent>
+                      <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
+                      <SelectItem value="Lighting">Lighting</SelectItem>
+                      <SelectItem value="Appliances">Appliances</SelectItem>
+                      <SelectItem value="IT">IT / Electronics</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={addForm.control} name="currentPowerW" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wattage (W)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={addForm.control} name="dailyHoursUsed" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Hours Used Per Day</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number" min={1} max={24} placeholder="8"
+                      {...field}
+                      onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-muted-foreground">How many hours per day does this device typically run? (1–24)</p>
+                  <FormMessage />
+                </FormItem>
+              )} />
               <Button type="submit" className="w-full" disabled={createMutation.isPending}>
                 {createMutation.isPending ? "Adding..." : "Add Device"}
               </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Device Dialog */}
+      <Dialog open={!!editDevice} onOpenChange={(v) => { if (!v) setEditDevice(null); }}>
+        <DialogContent className="glass-panel border-border/50">
+          <DialogHeader>
+            <DialogTitle>Edit "{editDevice?.name}"</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEdit)} className="space-y-4 pt-4">
+              <FormField control={editForm.control} name="name" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Device Name</FormLabel>
+                  <FormControl><Input placeholder="e.g. Living Room Aircon" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={editForm.control} name="category" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
+                      <SelectItem value="Lighting">Lighting</SelectItem>
+                      <SelectItem value="Appliances">Appliances</SelectItem>
+                      <SelectItem value="IT">IT / Electronics</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={editForm.control} name="currentPowerW" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wattage (W)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={editForm.control} name="dailyHoursUsed" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Hours Used Per Day</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number" min={1} max={24} placeholder="8"
+                      {...field}
+                      onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-muted-foreground">How many hours per day does this device typically run? (1–24)</p>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="flex gap-3">
+                <Button type="button" variant="outline" className="flex-1" onClick={() => setEditDevice(null)}>Cancel</Button>
+                <Button type="submit" className="flex-1" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
             </form>
           </Form>
         </DialogContent>

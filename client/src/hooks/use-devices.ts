@@ -70,7 +70,47 @@ export function useToggleDevice() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
-      // Invalidate consumption data so the dashboard updates
+      queryClient.invalidateQueries({ queryKey: [api.consumption.overview.path] });
+      queryClient.invalidateQueries({ queryKey: [api.consumption.byCategory.path] });
+    },
+  });
+}
+
+export function useUpdateDevice() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...data }: { id: number; name?: string; currentPowerW?: number; dailyHoursUsed?: number; category?: string }) => {
+      const url = buildUrl(api.devices.update.path, { id });
+      const res = await fetch(url, {
+        method: api.devices.update.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to update device");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
+      queryClient.invalidateQueries({ queryKey: [api.consumption.overview.path] });
+      queryClient.invalidateQueries({ queryKey: [api.consumption.byCategory.path] });
+    },
+  });
+}
+
+export function useDeleteDevice() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const url = buildUrl(api.devices.delete.path, { id });
+      const res = await fetch(url, { method: api.devices.delete.method, credentials: "include" });
+      if (!res.ok) throw new Error("Failed to delete device");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
       queryClient.invalidateQueries({ queryKey: [api.consumption.overview.path] });
       queryClient.invalidateQueries({ queryKey: [api.consumption.byCategory.path] });
     },
