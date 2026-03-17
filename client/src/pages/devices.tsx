@@ -67,20 +67,35 @@ function DeviceForm({
   showPresets?: boolean;
 }) {
   const [filter, setFilter] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
   const applyPreset = (p: typeof PRESETS[0]) => {
     form.setValue("name", p.label);
     form.setValue("category", p.category);
     form.setValue("currentPowerW", p.watts);
     form.setValue("dailyHoursUsed", p.hours);
+    setQuantity(1);
+  };
+
+  const handleSubmit = (data: any) => {
+    const qty = Math.max(1, quantity);
+    const finalData = {
+      ...data,
+      name: qty > 1 ? `${data.name} ×${qty}` : data.name,
+      currentPowerW: data.currentPowerW * qty,
+    };
+    onSubmit(finalData);
   };
 
   const categories = ["Appliances", "HVAC", "Lighting", "IT"];
   const filtered = filter ? PRESETS.filter(p => p.category === filter) : PRESETS;
 
+  const baseWatts = form.watch?.("currentPowerW") || 0;
+  const totalWatts = baseWatts * Math.max(1, quantity);
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-2">
         {showPresets && (
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Quick Pick</p>
@@ -143,16 +158,31 @@ function DeviceForm({
             <FormMessage />
           </FormItem>
         )} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <FormField control={form.control} name="currentPowerW" render={({ field }) => (
             <FormItem>
-              <FormLabel>Wattage (W)</FormLabel>
+              <FormLabel>Wattage (W) <span className="text-muted-foreground font-normal">each</span></FormLabel>
               <FormControl>
                 <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )} />
+          {showPresets && (
+            <FormItem>
+              <FormLabel>Quantity</FormLabel>
+              <Input
+                type="number"
+                min={1}
+                max={50}
+                value={quantity}
+                onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+              {quantity > 1 && (
+                <p className="text-[10px] text-primary font-mono mt-1">= {totalWatts}W total</p>
+              )}
+            </FormItem>
+          )}
           <FormField control={form.control} name="dailyHoursUsed" render={({ field }) => (
             <FormItem>
               <FormLabel>Hours / Day</FormLabel>
