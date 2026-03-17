@@ -101,6 +101,48 @@ export async function registerRoutes(
     res.json(insights);
   });
 
+  // Live insights computed from actual device + settings data
+  app.get('/api/insights/live', async (req, res) => {
+    const [devices, settings] = await Promise.all([
+      storage.getDevices(),
+      storage.getSettings(),
+    ]);
+
+    const activeDevices = devices.filter(d => d.status);
+    const dailyKwh = activeDevices.reduce(
+      (sum, d) => sum + (d.currentPowerW * d.dailyHoursUsed) / 1000, 0
+    );
+    const monthlyKwh = dailyKwh * 30;
+    const subsidy = settings.monthlySubsidy ?? 0;
+    const estimatedBill = Math.max(0, monthlyKwh * settings.electricityRate - subsidy);
+    const isOverBudget = estimatedBill > settings.monthlyBudget;
+    const overBy = estimatedBill - settings.monthlyBudget;
+
+    // Per-device breakdown, sorted highest cost first
+    const deviceBreakdown = devices
+      .filter(d => d.status)
+      .map(d => {
+        const devDailyKwh = (d.currentPowerW * d.dailyHoursUsed) / 1000;
+        const devMonthlyKwh = devDailyKwh * 30;
+        const devMonthlyCost = devMonthlyKwh * settings.electricityRate;
+        const savingsIfReduced2h = (d.currentPowerW * 2 / 1000) * 30 * settings.electricityRate;
+        return { ...d, devDailyKwh, devMonthlyKwh, devMonthlyCost, savingsIfReduced2h };
+      })
+      .sort((a, b) => b.devMonthlyCost - a.devMonthlyCost);
+
+    res.json({
+      estimatedBill,
+      monthlyBudget: settings.monthlyBudget,
+      monthlySubsidy: subsidy,
+      electricityRate: settings.electricityRate,
+      isOverBudget,
+      overBy,
+      monthlyKwh,
+      dailyKwh,
+      deviceBreakdown,
+    });
+  });
+
   app.post(api.insights.apply.path, async (req, res) => {
     const insight = await storage.applyInsight(Number(req.params.id));
     if (!insight) {
