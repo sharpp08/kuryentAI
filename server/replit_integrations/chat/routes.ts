@@ -112,9 +112,9 @@ Always use this live data. Do the math. Keep it short and punchy.`;
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Stream response - gpt-4o-mini is faster while staying accurate
+      // Stream response
       const stream = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-4.1-mini",
         messages: chatMessages,
         stream: true,
         max_tokens: 300,
