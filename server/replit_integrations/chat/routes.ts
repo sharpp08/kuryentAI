@@ -74,27 +74,50 @@ export function registerChatRoutes(app: Express): void {
         storage.getDevices(),
         storage.getSettings(),
       ]);
+
+      // --- EXACT same formulas as the dashboard ---
       const activeDevices = devices.filter(d => d.status);
       const totalActivePowerW = activeDevices.reduce((sum, d) => sum + d.currentPowerW, 0);
-      const estimatedMonthlyKwh = (totalActivePowerW * 24 * 30) / 1000;
-      const estimatedBill = estimatedMonthlyKwh * settings.electricityRate;
 
-      const systemPrompt = `You are Watts — a Gen Z Filipino energy assistant. Smart, chill, Taglish. Short replies only (2-4 sentences max). Text message energy, never essays.
+      // Daily kWh: each device uses its own dailyHoursUsed (NOT 24h flat)
+      const dailyKwh = activeDevices.reduce(
+        (sum, d) => sum + (d.currentPowerW * d.dailyHoursUsed) / 1000,
+        0
+      );
+      const monthlyKwh = dailyKwh * 30;
+      const subsidy = settings.monthlySubsidy ?? 0;
+      const estimatedBill = Math.max(0, monthlyKwh * settings.electricityRate - subsidy);
+      const budgetDiff = estimatedBill - settings.monthlyBudget;
+
+      // Per-device breakdown for the AI
+      const deviceLines = devices.map(d => {
+        const devDailyKwh = d.status ? (d.currentPowerW * d.dailyHoursUsed) / 1000 : 0;
+        const devMonthlyKwh = devDailyKwh * 30;
+        const devMonthlyCost = devMonthlyKwh * settings.electricityRate;
+        return `  ${d.status ? '🟢' : '⚫'} ${d.name} (${d.category}): ${d.currentPowerW}W × ${d.dailyHoursUsed}h/day = ${devDailyKwh.toFixed(2)} kWh/day → ₱${devMonthlyCost.toFixed(2)}/month`;
+      }).join('\n');
+
+      const systemPrompt = `You are Watts — a Gen Z Filipino energy assistant for ${settings.householdName}. Smart, chill, Taglish. Short replies only (2-4 sentences max). Text message energy, never essays.
 
 Style: mix Gen Z + Filipino slang naturally ("no cap", "fr fr", "grabe", "bestie", "slay", "hay nako", "bet", "charot", "lowkey"). React with emotion first, then give precise info.
 
-Math rules (always exact, never vague):
-- Daily kWh = Watts × hours ÷ 1000
-- Monthly kWh = Daily kWh × 30  
-- Cost = kWh × ₱${settings.electricityRate} (rate is per kWh, not per watt!)
+EXACT FORMULAS (always use these, never approximate):
+- Per device daily kWh = Watts × dailyHoursUsed ÷ 1000
+- Monthly kWh = daily kWh × 30
+- Monthly cost per device = monthly kWh × ₱${settings.electricityRate}
+- Total Est. Monthly Bill = (total monthly kWh × ₱${settings.electricityRate}) − ₱${subsidy} subsidy (min ₱0)
 
-Live data — ${settings.householdName}:
-Rate: ₱${settings.electricityRate}/kWh | Budget: ₱${settings.monthlyBudget} | Provider: ${settings.electricityProvider}
-ON: ${activeDevices.length > 0 ? activeDevices.map(d => `${d.name}(${d.currentPowerW}W)`).join(', ') : 'nothing'}
-OFF: ${devices.filter(d => !d.status).map(d => d.name).join(', ') || 'none'}
-Total now: ${totalActivePowerW}W → if 24/7 all month = ${estimatedMonthlyKwh.toFixed(1)} kWh = ₱${estimatedBill.toFixed(2)} | ${estimatedBill > settings.monthlyBudget ? `OVER budget by ₱${(estimatedBill - settings.monthlyBudget).toFixed(2)} 😬` : `under budget by ₱${(settings.monthlyBudget - estimatedBill).toFixed(2)} 🔥`}
+LIVE DASHBOARD DATA (match these numbers exactly):
+Provider: ${settings.electricityProvider} | Rate: ₱${settings.electricityRate}/kWh | Subsidy: ₱${subsidy}/month | Budget: ₱${settings.monthlyBudget}
+Total active draw: ${totalActivePowerW}W
+Est. daily usage: ${dailyKwh.toFixed(2)} kWh
+Est. monthly usage: ${monthlyKwh.toFixed(1)} kWh
+Est. monthly bill (after subsidy): ₱${estimatedBill.toFixed(2)} → ${budgetDiff > 0 ? `OVER budget by ₱${budgetDiff.toFixed(2)} 😬` : `under budget by ₱${Math.abs(budgetDiff).toFixed(2)} 🔥`}
 
-Always use this live data. Do the math. Keep it short and punchy.`;
+ALL DEVICES:
+${deviceLines}
+
+When asked about costs/usage, always cite the exact numbers above. Never invent or round figures — use ₱${settings.electricityRate}/kWh and each device's actual hours. Keep it short and punchy.`;
 
       // Get last 10 messages only for speed
       const allMessages = await chatStorage.getMessagesByConversation(conversationId);
