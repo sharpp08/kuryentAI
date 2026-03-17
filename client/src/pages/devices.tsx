@@ -16,6 +16,33 @@ import { insertDeviceSchema, Device } from "@shared/schema";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+const PRESETS = [
+  { label: "Electric Kettle",    icon: "🫖", category: "Appliances", watts: 1500, hours: 1  },
+  { label: "Rice Cooker",        icon: "🍚", category: "Appliances", watts: 700,  hours: 1  },
+  { label: "Induction Cooker",   icon: "🍳", category: "Appliances", watts: 2000, hours: 1  },
+  { label: "Microwave",          icon: "📡", category: "Appliances", watts: 1000, hours: 1  },
+  { label: "Electric Stove",     icon: "🔥", category: "Appliances", watts: 1500, hours: 1  },
+  { label: "Refrigerator",       icon: "🧊", category: "Appliances", watts: 200,  hours: 24 },
+  { label: "Washing Machine",    icon: "🧺", category: "Appliances", watts: 500,  hours: 1  },
+  { label: "Electric Iron",      icon: "👔", category: "Appliances", watts: 1000, hours: 1  },
+  { label: "Water Heater",       icon: "🚿", category: "Appliances", watts: 3000, hours: 1  },
+  { label: "Hair Dryer",         icon: "💨", category: "Appliances", watts: 1200, hours: 1  },
+  { label: "Electric Fan",       icon: "🌀", category: "Appliances", watts: 60,   hours: 8  },
+  { label: "Stand Fan",          icon: "🌬️", category: "Appliances", watts: 100,  hours: 8  },
+  { label: "Aircon (0.75 HP)",   icon: "❄️", category: "HVAC",       watts: 560,  hours: 8  },
+  { label: "Aircon (1 HP)",      icon: "❄️", category: "HVAC",       watts: 746,  hours: 8  },
+  { label: "Aircon (1.5 HP)",    icon: "❄️", category: "HVAC",       watts: 1119, hours: 8  },
+  { label: "Aircon (2 HP)",      icon: "❄️", category: "HVAC",       watts: 1492, hours: 8  },
+  { label: "LED Bulb",           icon: "💡", category: "Lighting",   watts: 10,   hours: 8  },
+  { label: "Fluorescent Light",  icon: "🔆", category: "Lighting",   watts: 40,   hours: 8  },
+  { label: "LED TV (32\")",       icon: "📺", category: "IT",         watts: 40,   hours: 6  },
+  { label: "LED TV (55\")",       icon: "📺", category: "IT",         watts: 80,   hours: 6  },
+  { label: "Desktop PC",         icon: "🖥️", category: "IT",         watts: 300,  hours: 8  },
+  { label: "Laptop",             icon: "💻", category: "IT",         watts: 65,   hours: 8  },
+  { label: "WiFi Router",        icon: "📶", category: "IT",         watts: 10,   hours: 24 },
+  { label: "Phone Charger",      icon: "🔌", category: "IT",         watts: 20,   hours: 3  },
+];
+
 function getDeviceIcon(category: string) {
   switch (category.toLowerCase()) {
     case 'hvac': return Snowflake;
@@ -23,6 +50,128 @@ function getDeviceIcon(category: string) {
     case 'appliances': return Monitor;
     default: return Cpu;
   }
+}
+
+function DeviceForm({
+  form,
+  onSubmit,
+  isPending,
+  submitLabel,
+  showPresets = false,
+}: {
+  form: any;
+  onSubmit: (data: any) => void;
+  isPending: boolean;
+  submitLabel: string;
+  showPresets?: boolean;
+}) {
+  const [filter, setFilter] = useState<string | null>(null);
+
+  const applyPreset = (p: typeof PRESETS[0]) => {
+    form.setValue("name", p.label);
+    form.setValue("category", p.category);
+    form.setValue("currentPowerW", p.watts);
+    form.setValue("dailyHoursUsed", p.hours);
+  };
+
+  const categories = ["Appliances", "HVAC", "Lighting", "IT"];
+  const filtered = filter ? PRESETS.filter(p => p.category === filter) : PRESETS;
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
+        {showPresets && (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Quick Pick</p>
+            <div className="flex gap-1.5 flex-wrap">
+              {categories.map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setFilter(filter === c ? null : c)}
+                  className={cn(
+                    "text-xs px-2.5 py-1 rounded-full border transition-colors",
+                    filter === c
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary"
+                  )}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-1.5 max-h-44 overflow-y-auto pr-1">
+              {filtered.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  className="flex flex-col items-center gap-1 p-2 rounded-xl border border-border/40 hover:border-primary/50 hover:bg-primary/5 transition-all text-center group"
+                >
+                  <span className="text-xl leading-none">{p.icon}</span>
+                  <span className="text-[10px] leading-tight text-muted-foreground group-hover:text-foreground font-medium">{p.label}</span>
+                  <span className="text-[10px] text-primary font-mono">{p.watts}W</span>
+                </button>
+              ))}
+            </div>
+            <div className="border-t border-border/30 pt-3 mt-1">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-3">Or fill in manually</p>
+            </div>
+          </div>
+        )}
+
+        <FormField control={form.control} name="name" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Device Name</FormLabel>
+            <FormControl><Input placeholder="e.g. Kitchen Kettle" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="category" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Category</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl><SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger></FormControl>
+              <SelectContent>
+                <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
+                <SelectItem value="Lighting">Lighting</SelectItem>
+                <SelectItem value="Appliances">Appliances</SelectItem>
+                <SelectItem value="IT">IT / Electronics</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <div className="grid grid-cols-2 gap-3">
+          <FormField control={form.control} name="currentPowerW" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Wattage (W)</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="dailyHoursUsed" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Hours / Day</FormLabel>
+              <FormControl>
+                <Input
+                  type="number" min={1} max={24} placeholder="8"
+                  {...field}
+                  onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 1)))}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? "Saving..." : submitLabel}
+        </Button>
+      </form>
+    </Form>
+  );
 }
 
 export default function Devices() {
@@ -144,7 +293,6 @@ export default function Devices() {
                     "glass-panel overflow-hidden transition-all duration-300 h-[200px] group relative",
                     device.status ? "border-primary/30 shadow-[0_0_15px_-5px_hsl(var(--primary)/0.2)]" : "opacity-80"
                   )}>
-                    {/* Action buttons — visible on hover */}
                     <div className="absolute top-2 left-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
                       <button
                         onClick={() => { setPrefill(device); setAddOpen(true); }}
@@ -209,7 +357,6 @@ export default function Devices() {
               );
             })}
 
-            {/* Add new device card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -233,64 +380,17 @@ export default function Devices() {
 
       {/* Add Device Dialog */}
       <Dialog open={addOpen} onOpenChange={(v) => { setAddOpen(v); if (!v) setPrefill(null); }}>
-        <DialogContent className="glass-panel border-border/50">
+        <DialogContent className="glass-panel border-border/50 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{prefill ? `Add another like "${prefill.name}"` : "Add New Device"}</DialogTitle>
           </DialogHeader>
-          <Form {...addForm}>
-            <form onSubmit={addForm.handleSubmit(onAdd)} className="space-y-4 pt-4">
-              <FormField control={addForm.control} name="name" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Device Name</FormLabel>
-                  <FormControl><Input placeholder="e.g. Living Room Aircon" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={addForm.control} name="category" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
-                      <SelectItem value="Lighting">Lighting</SelectItem>
-                      <SelectItem value="Appliances">Appliances</SelectItem>
-                      <SelectItem value="IT">IT / Electronics</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={addForm.control} name="currentPowerW" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wattage (W)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={addForm.control} name="dailyHoursUsed" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Hours Used Per Day</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number" min={1} max={24} placeholder="8"
-                      {...field}
-                      onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-muted-foreground">How many hours per day does this device typically run? (1–24)</p>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Adding..." : "Add Device"}
-              </Button>
-            </form>
-          </Form>
+          <DeviceForm
+            form={addForm}
+            onSubmit={onAdd}
+            isPending={createMutation.isPending}
+            submitLabel="Add Device"
+            showPresets={!prefill}
+          />
         </DialogContent>
       </Dialog>
 
@@ -300,63 +400,12 @@ export default function Devices() {
           <DialogHeader>
             <DialogTitle>Edit "{editDevice?.name}"</DialogTitle>
           </DialogHeader>
-          <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEdit)} className="space-y-4 pt-4">
-              <FormField control={editForm.control} name="name" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Device Name</FormLabel>
-                  <FormControl><Input placeholder="e.g. Living Room Aircon" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={editForm.control} name="category" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="HVAC">HVAC / Aircon</SelectItem>
-                      <SelectItem value="Lighting">Lighting</SelectItem>
-                      <SelectItem value="Appliances">Appliances</SelectItem>
-                      <SelectItem value="IT">IT / Electronics</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={editForm.control} name="currentPowerW" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wattage (W)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="0" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={editForm.control} name="dailyHoursUsed" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Hours Used Per Day</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number" min={1} max={24} placeholder="8"
-                      {...field}
-                      onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-muted-foreground">How many hours per day does this device typically run? (1–24)</p>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="flex gap-3">
-                <Button type="button" variant="outline" className="flex-1" onClick={() => setEditDevice(null)}>Cancel</Button>
-                <Button type="submit" className="flex-1" disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <DeviceForm
+            form={editForm}
+            onSubmit={onEdit}
+            isPending={updateMutation.isPending}
+            submitLabel="Save Changes"
+          />
         </DialogContent>
       </Dialog>
     </div>
