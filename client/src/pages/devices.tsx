@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useDevices, useToggleDevice, useCreateDevice, useUpdateDevice, useDeleteDevice } from "@/hooks/use-devices";
-import { Switch } from "@/components/ui/switch";
+import { useDevices, useCreateDevice, useUpdateDevice, useDeleteDevice } from "@/hooks/use-devices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Power, Cpu, Monitor, Snowflake, Lightbulb, Plus, Pencil, Trash2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -207,7 +206,6 @@ function DeviceForm({
 
 export default function Devices() {
   const { data: devices, isLoading } = useDevices();
-  const toggleMutation = useToggleDevice();
   const createMutation = useCreateDevice();
   const updateMutation = useUpdateDevice();
   const deleteMutation = useDeleteDevice();
@@ -311,7 +309,6 @@ export default function Devices() {
           <>
             {devices?.map((device, index) => {
               const Icon = getDeviceIcon(device.category);
-              const isPending = toggleMutation.isPending && toggleMutation.variables?.id === device.id;
 
               return (
                 <motion.div
@@ -356,12 +353,6 @@ export default function Devices() {
                         )}>
                           <Icon className="h-6 w-6" />
                         </div>
-                        <Switch
-                          checked={device.status}
-                          disabled={isPending}
-                          onCheckedChange={(checked) => toggleMutation.mutate({ id: device.id, status: checked })}
-                          className="data-[state=checked]:bg-primary"
-                        />
                       </div>
 
                       <div className="mt-4">
