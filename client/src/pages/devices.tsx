@@ -34,6 +34,7 @@ const PRESETS = [
   { label: "Aircon (1.5 HP)",    icon: "❄️", category: "HVAC",       watts: 1119, hours: 8  },
   { label: "Aircon (2 HP)",      icon: "❄️", category: "HVAC",       watts: 1492, hours: 8  },
   { label: "LED Bulb",           icon: "💡", category: "Lighting",   watts: 10,   hours: 8  },
+  { label: "CFL Bulb",           icon: "🔅", category: "Lighting",   watts: 15,   hours: 8  },
   { label: "Fluorescent Light",  icon: "🔆", category: "Lighting",   watts: 40,   hours: 8  },
   { label: "LED TV (32\")",       icon: "📺", category: "IT",         watts: 40,   hours: 6  },
   { label: "LED TV (55\")",       icon: "📺", category: "IT",         watts: 80,   hours: 6  },
