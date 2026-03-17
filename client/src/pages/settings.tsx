@@ -44,6 +44,7 @@ export default function Settings() {
       electricityProvider: "ANTECO",
       electricityRate: 13,
       monthlyBudget: 5000,
+      monthlySubsidy: 500,
     },
   });
 
@@ -122,23 +123,44 @@ export default function Settings() {
                   />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="monthlyBudget"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Target Monthly Budget (₱)</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          {...field} 
-                          onChange={e => field.onChange(parseInt(e.target.value))} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="monthlyBudget"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Monthly Budget (₱)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            onChange={e => field.onChange(parseInt(e.target.value))} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="monthlySubsidy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Monthly Subsidy (₱)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="500"
+                            {...field} 
+                            onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">Deducted from your estimated bill (e.g. govt subsidy).</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <Button type="submit" className="w-full gap-2" disabled={updateMutation.isPending}>
                   <Save className="h-4 w-4" />

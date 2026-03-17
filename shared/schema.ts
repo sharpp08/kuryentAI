@@ -37,6 +37,7 @@ export const appSettings = pgTable("app_settings", {
   electricityProvider: text("electricity_provider").notNull().default("ANTECO"),
   electricityRate: real("electricity_rate").notNull().default(13),
   monthlyBudget: integer("monthly_budget").notNull().default(5000),
+  monthlySubsidy: integer("monthly_subsidy").notNull().default(500),
 });
 
 export * from "./models/chat";

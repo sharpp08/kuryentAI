@@ -36,8 +36,9 @@ export default function Dashboard() {
     ? devices.filter(d => d.status).reduce((sum, d) => sum + (d.currentPowerW * d.dailyHoursUsed) / 1000, 0)
     : 0;
   
+  const subsidy = settings?.monthlySubsidy ?? 500;
   const estMonthlyUsage = currentDailyKwh * 30;
-  const estMonthlyBill = estMonthlyUsage * rate;
+  const estMonthlyBill = Math.max(0, estMonthlyUsage * rate - subsidy);
 
   return (
     <div className="space-y-8 pb-10">
@@ -107,7 +108,7 @@ export default function Dashboard() {
                 </div>
               )}
               <p className="text-xs text-muted-foreground mt-1">
-                ~{estMonthlyUsage.toFixed(0)} kWh · {settings?.electricityProvider || 'ANTECO'}
+                ~{estMonthlyUsage.toFixed(0)} kWh · -₱{subsidy} subsidy · {settings?.electricityProvider || 'ANTECO'}
               </p>
             </CardContent>
           </Card>

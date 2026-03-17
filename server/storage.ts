@@ -142,6 +142,7 @@ export class DatabaseStorage implements IStorage {
         electricityProvider: "ANTECO",
         electricityRate: 13,
         monthlyBudget: 5000,
+        monthlySubsidy: 500,
       }).returning();
       return newSettings;
     }
