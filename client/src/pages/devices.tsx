@@ -39,6 +39,7 @@ export default function Devices() {
       name: "",
       category: "Appliances",
       currentPowerW: 0,
+      dailyHoursUsed: 8,
       status: false,
     },
   });
@@ -49,10 +50,11 @@ export default function Devices() {
         name: prefill.name || "",
         category: prefill.category || "Appliances",
         currentPowerW: prefill.currentPowerW || 0,
+        dailyHoursUsed: prefill.dailyHoursUsed ?? 8,
         status: false,
       });
     } else if (open && !prefill) {
-      form.reset({ name: "", category: "Appliances", currentPowerW: 0, status: false });
+      form.reset({ name: "", category: "Appliances", currentPowerW: 0, dailyHoursUsed: 8, status: false });
     }
   }, [open, prefill]);
 
@@ -154,9 +156,12 @@ export default function Devices() {
                           <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
                             {device.category}
                           </span>
-                          <div className="flex items-center gap-1.5 text-sm font-medium font-mono">
-                            <Power className={cn("h-3.5 w-3.5", device.status ? "text-primary" : "text-muted-foreground")} />
-                            {device.status ? `${device.currentPowerW}W` : '0W'}
+                            <div className="flex flex-col items-end gap-0.5">
+                            <div className="flex items-center gap-1.5 text-sm font-medium font-mono">
+                              <Power className={cn("h-3.5 w-3.5", device.status ? "text-primary" : "text-muted-foreground")} />
+                              {device.status ? `${device.currentPowerW}W` : '0W'}
+                            </div>
+                            <span className="text-xs text-muted-foreground">{device.dailyHoursUsed}h/day</span>
                           </div>
                         </div>
                       </div>
@@ -244,6 +249,26 @@ export default function Devices() {
                         placeholder="0"
                         {...field}
                         onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dailyHoursUsed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hours Used Per Day</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={24}
+                        placeholder="8"
+                        {...field}
+                        onChange={e => field.onChange(Math.min(24, Math.max(1, parseInt(e.target.value) || 8)))}
                       />
                     </FormControl>
                     <FormMessage />

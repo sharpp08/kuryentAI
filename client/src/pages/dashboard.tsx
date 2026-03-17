@@ -28,20 +28,15 @@ export default function Dashboard() {
   const activeDevices = devices?.filter(d => d.status).length || 0;
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
-  // Calculate estimated monthly usage and bill
+  // Calculate estimated monthly usage and bill using per-device daily hours
   const rate = settings?.electricityRate || 13.8161;
-  const hasData = overview && overview.length > 0 && overview.some(item => item.energyKwh > 0);
+
+  // Sum each active device: Watts × hours/day ÷ 1000 = daily kWh
+  const currentDailyKwh = devices
+    ? devices.filter(d => d.status).reduce((sum, d) => sum + (d.currentPowerW * d.dailyHoursUsed) / 1000, 0)
+    : 0;
   
-  const avgHistoricalDailyUsage = hasData 
-    ? overview!.reduce((sum, item) => sum + item.energyKwh, 0) / overview!.length 
-    : 0; 
-  
-  // Current real-time load converted to daily kWh (W * 24h / 1000)
-  const currentDailyKwh = (currentDraw * 24) / 1000;
-  
-  const projectedDailyUsage = currentDailyKwh;
-  
-  const estMonthlyUsage = projectedDailyUsage * 30;
+  const estMonthlyUsage = currentDailyKwh * 30;
   const estMonthlyBill = estMonthlyUsage * rate;
 
   return (
