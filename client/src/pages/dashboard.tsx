@@ -29,7 +29,7 @@ export default function Dashboard() {
   const currentDraw = devices?.filter(d => d.status).reduce((sum, d) => sum + d.currentPowerW, 0) || 0;
   
   // Calculate estimated monthly usage and bill using per-device daily hours
-  const rate = settings?.electricityRate || 13.8161;
+  const rate = settings?.electricityRate || 13;
 
   // Sum each active device: Watts × hours/day ÷ 1000 = daily kWh
   const currentDailyKwh = devices
